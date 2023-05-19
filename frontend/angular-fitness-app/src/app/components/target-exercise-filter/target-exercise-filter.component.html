@@ -1,0 +1,16 @@
+
+    <label for="target" class="form-label">Choose a target muscle:</label>
+    <select name="target" id="target" [(ngModel)]="selectedValue" (ngModelChange)="onChange()" class="form-select mb-3">
+        <option *ngIf="selectedValue.length === 0" value="" selected disabled>Select target</option>
+        <option *ngFor="let tempTarget of targets" [value]="tempTarget" class="ms-2">
+            {{ tempTarget }}
+        </option>
+    </select>
+    <button class="btn btn-danger" (click)="reset()">Reset</button>
+
+
+
+    
+    
+
+  

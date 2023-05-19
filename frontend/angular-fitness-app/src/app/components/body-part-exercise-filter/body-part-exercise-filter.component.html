@@ -1,0 +1,9 @@
+
+  <label for="bodyPart" class="form-label">Choose a bodypart:</label>
+  <select name="bodyPart" id="bodyPart" [(ngModel)]="selectedValue" (ngModelChange)="onChange()" class="form-select mb-3">
+    <option *ngIf="selectedValue.length === 0" value="" selected disabled>Select bodyPart</option>
+    <option *ngFor="let tempBodyPart of bodyParts" [value]="tempBodyPart" class="ms-2">
+      {{ tempBodyPart }}
+    </option>
+  </select>
+  <button class="btn btn-danger" (click)="reset()">Reset</button>

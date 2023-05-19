@@ -1,0 +1,19 @@
+<div class="container d-flex justify-content-center align-items-center h-100 m-3">
+  <div class="card text-center">
+    <!-- <audio [src]="exercise.audioUrl"></audio>
+    <button (click)="playAudio(exercise.audioUrl)"><i class="fa fa-play"></i></button> -->
+    <div class="card-header">
+      <img src="{{ exercise.gifUrl }}" alt="{{ exercise.name }}" />
+    </div>
+    <div class="card-body">
+      <h5 class="card-title">{{ exercise.name }}</h5>
+      <p class="card-text">Target: {{ exercise.target }}</p>
+      <p class="card-text">Body Part: {{ exercise.bodyPart }}</p>
+      <p class="card-text">Equipment: {{ exercise.equipment }}</p>
+      <p class="card-text">Instructions: {{ exercise.instructions }}</p>
+    </div>
+    <a routerLink="/exercise">
+        <p> Go back to exercise list</p>
+    </a>
+  </div>
+</div>
