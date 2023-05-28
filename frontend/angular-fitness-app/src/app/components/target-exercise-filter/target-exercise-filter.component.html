@@ -6,7 +6,7 @@
             {{ tempTarget }}
         </option>
     </select>
-    <button class="btn btn-danger" (click)="reset()">Reset</button>
+    <button *ngIf="selectedValue.length > 0" class="btn btn-danger" (click)="reset()">Reset</button>
 
 
 

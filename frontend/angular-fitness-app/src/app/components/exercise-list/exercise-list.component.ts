@@ -1,12 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Exercise } from 'src/app/common/Exercise';
-import { Filter } from 'src/app/common/Filter';
 import { ExerciseService } from 'src/app/services/exercise.service';
 import { OpenAiService } from 'src/app/services/openAi.service';
-
-interface FilterObj {
-  [key: string]: Filter;
-}
+import { Filter } from 'src/app/common/Filter';
 
 @Component({
   selector: 'app-exercise-list',
@@ -58,7 +54,7 @@ export class ExerciseListComponent implements OnInit {
     let filteredList: Exercise[] = this.completeExerciseList;
 
     if (this.filterMode) {
-      filteredList = this.filterCompleteExerciseList(this.filterObj);
+      filteredList = this.filterList(this.filterObj);
     }
 
     if (this.searchMode && this.searchValue) {
@@ -70,15 +66,13 @@ export class ExerciseListComponent implements OnInit {
 
 
   loadPage(data: Exercise[]) {
-    console.log("in loadPage");
-    this.resetPage();
-    this.totalElements = data.length;
+    this.totalElements = data.length || 0;
     if (this.filterMode || this.searchMode) {
       this.setFilteredPages(data);
     } else {
       this.setPages(data);
     }
-    this.displayPage();
+    this.displayPage()
     if (!this.isDataEqual(data, this.previousData)) {
       this.resetPage();
     }
@@ -97,14 +91,11 @@ export class ExerciseListComponent implements OnInit {
     return true;
   }
   
-
   resetPage() {
-    console.log("in resetPages")
     this.currentPage = 1
   }
 
   setPages(data: Exercise[]) {
-    console.log("in setPages");
     this.pages = [];
     let counter = 0;
     while (counter < data.length) {
@@ -115,11 +106,9 @@ export class ExerciseListComponent implements OnInit {
       }
       this.pages.push(page);
     }
-    this.displayPage();
   }
 
   setFilteredPages(data: Exercise[]) {
-    console.log("in setFilteredPages");
     this.filteredPages = [];
     let counter = 0;
     while (counter < data.length) {
@@ -130,16 +119,16 @@ export class ExerciseListComponent implements OnInit {
       }
       this.filteredPages.push(page);
     }
-    this.displayPage();
   }
-
   
   displayPage() {
-    console.log("in displayPage");
     if (this.filterMode || this.searchMode) {
       this.exercises = this.filteredPages[this.currentPage - 1];
     } else {
       this.exercises = this.pages[this.currentPage - 1];
+    }
+    if (!this.exercises) {
+      this.exercises = []
     }
   }
 
@@ -201,7 +190,7 @@ export class ExerciseListComponent implements OnInit {
     }
   }
   
-  filterCompleteExerciseList({ bodypart, equipment, target }: FilterObj): Exercise[] {
+  filterList({ bodypart, equipment, target }: FilterObj): Exercise[] {
     let filteredList = this.completeExerciseList
     if (bodypart.value.length > 0) {
       filteredList = filteredList.filter(exercise => exercise.bodyPart === bodypart.value)
@@ -224,5 +213,13 @@ export class ExerciseListComponent implements OnInit {
     return data.filter(exercise => exercise.name?.toLowerCase().includes(this.searchValue.toLowerCase()))
   }
 
+  updatePageSize() {
+     this.resetPage()
+     this.listExercises()
+  }
 
+}
+
+interface FilterObj {
+  [key: string]: Filter;
 }

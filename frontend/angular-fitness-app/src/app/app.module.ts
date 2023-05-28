@@ -15,11 +15,18 @@ import { OpenAiService } from './services/openAi.service';
 import { SearchExerciseComponent } from './components/search-exercise/search-exercise.component';
 import { ExerciseDetailComponent } from './components/exercise-detail/exercise-detail.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { ExerciseComponent } from './components/exercise/exercise.component';
+import { WorkoutComponent } from './components/workout/workout.component';
+import { WorkoutListComponent } from './components/workout-list/workout-list.component';
+import { NavbarComponent } from './components/navbar/navbar.component';
+import { HomeComponent } from './components/home/home.component';
+
 
  const routes:Routes = [
+  {path: '', component: HomeComponent},
   {path: 'exercise/:id', component: ExerciseDetailComponent},
-  {path: 'exercise', component: ExerciseListComponent},
-  {path: '', redirectTo: '/exercise', pathMatch: 'full'},
+  {path: 'exercise', component: ExerciseComponent},
+  {path: 'workout', component: WorkoutComponent},
   {path: '**', redirectTo: '/exercise', pathMatch: 'full'}
  ];
 
@@ -32,6 +39,11 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     TargetExerciseFilterComponent,
     SearchExerciseComponent,
     ExerciseDetailComponent,
+    ExerciseComponent,
+    WorkoutComponent,
+    WorkoutListComponent,
+    NavbarComponent,
+    HomeComponent,
   ],
   imports: [
     NgbModule,

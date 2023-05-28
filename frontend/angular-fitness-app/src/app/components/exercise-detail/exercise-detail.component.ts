@@ -10,7 +10,7 @@ import { ExerciseService } from 'src/app/services/exercise.service';
 })
 export class ExerciseDetailComponent implements OnInit {
 
-exercise!:Exercise;
+exercise?:Exercise;
 
 constructor(public route:ActivatedRoute, 
             public exerciseService:ExerciseService) { }
@@ -23,17 +23,8 @@ getExerciseDetails() {
   const id:string = this.route.snapshot.paramMap.get("id")!
   this.exerciseService.getExerciseById(id).subscribe(data => {
     this.exercise = data
+    console.log(data)
   })
 }
-
-playAudio(audioUrl:string) {
-  let audio = new Audio(audioUrl);
-  audio.load();
-  audio.play();
-}
-
-
-
-
 
 }

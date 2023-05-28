@@ -1,65 +1,3 @@
-<!-- <div class="container">
-  <div class="row justify-content-center">
-    <div class="col-lg-6" >
-      <app-search-exercise (initSearchValue)="initSearchValue($event)"></app-search-exercise>
-    </div>
-  </div>
-
-  <div class="row justify-content-center mb-4">
-    <h1>Filter:</h1>
-    <div class="col-lg-3">
-      <app-body-part-exercise-filter (filterEvent)="updateFilterObj($event)"></app-body-part-exercise-filter>
-    </div>
-    <div class="col-lg-3">
-      <app-equipment-exercise-filter (filterEvent)="updateFilterObj($event)"></app-equipment-exercise-filter>
-    </div>
-    <div class="col-lg-3">
-      <app-target-exercise-filter (filterEvent)="updateFilterObj($event)"></app-target-exercise-filter>
-    </div>
-  </div>
-
-
-  <div class="row row-cols-3 g-4">
-    <div class="col" *ngFor="let tempExercise of exercises">
-      <div class="card" style="margin-bottom:60px">
-        <img
-          src="{{ tempExercise.gifUrl }}"
-          class="card-img-top"
-          alt="{{ tempExercise.name }}"
-        />
-       
-        <div class="card-body text-center">
-          <a routerLink="/exercise/{{tempExercise.id}} ">
-            <h5 class="card-title">{{ tempExercise.name }}</h5>
-          </a>
-          <p class="card-text">Target: {{ tempExercise.target }}</p>
-          <p class="card-text">Bodypart: {{ tempExercise.bodyPart }}</p>
-          <p class="card-text">Equipment: {{ tempExercise.equipment }}</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-6">
-        <div class="row">
-          <div class="col-md-6">
-
-            <ngb-pagination [(page)]="currentPage"
-                            [pageSize]="pageSize"
-                            [collectionSize]="totalElements"
-                            (pageChange)="listExercises()">
-                            
-            </ngb-pagination>
-
-          </div>
-        </div>
-      </div>
-    </div>
-
-
-  </div>
-</div> -->
-
 <div class="container">
   <div class="row justify-content-center">
     <div class="col-lg-6">
@@ -84,8 +22,6 @@
     <div class="col" *ngFor="let tempExercise of exercises">
       <div class="card" style="margin-bottom: 60px">
         <img src="{{ tempExercise.gifUrl }}" class="card-img-top" alt="{{ tempExercise.name }}" />
-        <!-- <audio [src]="tempExercise.audioUrl"></audio>
-        <button (click)="playAudio(tempExercise.audioUrl)"><i class="fa fa-play"></i></button> -->
         <div class="card-body text-center">
           <a routerLink="/exercise/{{tempExercise.id}}">
             <h5 class="card-title">{{ tempExercise.name }}</h5>
@@ -98,17 +34,36 @@
     </div>
   </div>
 
-  <div class="row justify-content-center">
-    <div class="col-md-6">
-      <ngb-pagination
-        [(page)]="currentPage"
-        [pageSize]="pageSize"
-        [collectionSize]="totalElements"
-        (pageChange)="listExercises()"
-        class="pagination-centered"
-      >
-      </ngb-pagination>
+  <div class="row" *ngIf="exercises?.length === 0">
+    <div class="col text-center">
+      <h1> Spinner...loading </h1>
     </div>
   </div>
-</div>
 
+  <div class="row">
+    <div class="col-md-6"></div>
+    <div class="col-md-6">
+      <div class="row justify-content-end">
+        <div class="col-md-9">
+          <ngb-pagination [(page)]="currentPage" [pageSize]="pageSize" [collectionSize]="totalElements"
+            (pageChange)="listExercises()" [maxSize]="3" [boundaryLinks]="true" class="pagination-centered">
+          </ngb-pagination>
+        </div>
+        <div class="col-md-3">
+          <div class="d-flex justify-content-end">
+            <span class="mt-2">Page Size</span>
+            <select [(ngModel)]="pageSize" (ngModelChange)="updatePageSize()">
+              <option selected="true">50</option>
+              <option>75</option>
+              <option>100</option>
+              <option>125</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+</div>
