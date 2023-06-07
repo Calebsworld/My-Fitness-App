@@ -11,12 +11,12 @@ export class SearchExerciseComponent {
   @Output() initSearchValue = new EventEmitter<string>()
 
   onChange() {
-    this.initSearchValue.emit(this.searchValue)
+    this.initSearchValue.emit(this.searchValue.trim())
   }
 
   reset() {
     this.searchValue = ''
-    this.initSearchValue.emit(this.searchValue)
+    this.initSearchValue.emit(this.searchValue.trim())
   }
 
 

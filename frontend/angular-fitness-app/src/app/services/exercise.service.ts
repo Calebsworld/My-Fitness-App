@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Observable, of, tap, throwError } from "rxjs";
 import { environment } from "src/environments/environment.development";
 import { Exercise } from "../common/Exercise";
-import { catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -38,13 +38,17 @@ export class ExerciseService {
     if (this.exercises.length > 0) {
       // If the data is already cached, return it as an observable
       console.log('data cached')
-      return of(this.exercises);
+      return of(this.transformExercises(this.exercises));
     } else {
       // If the data is not cached, make an HTTP request and cache the response
       return this.httpClient
         .get<Exercise[]>(this.baseUrl, this.options)
         .pipe(
-          tap((data) => (this.exercises = data)),
+          tap((data) => { 
+            this.exercises = data;
+            this.transformExercises(this.exercises);
+            console.log('data not cached')
+          }),
           catchError(error => {
             console.error('Error fetching exercises:', error);
             return throwError(error);
@@ -53,20 +57,48 @@ export class ExerciseService {
     }
   }
   
+  transformExercises(exercises: Exercise[]): Exercise[] {
+    return exercises.map(exercise => {
+      return {
+        ...exercise,
+        name: this.uppercaseFirstLetter(exercise.name),
+        target: this.uppercaseFirstLetter(exercise.target),
+        bodyPart: this.uppercaseFirstLetter(exercise.bodyPart),
+        equipment: this.uppercaseFirstLetter(exercise.equipment)
+      };
+    });
+  }
+  
+  uppercaseFirstLetter(str: string): string {
+    return str.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+  }
+  
   getExerciseById(id: string): Observable<Exercise> {
-    
     if (this.exercise) {
       // If the data is already cached, return it as an observable
       console.log('data cached')
-      return of(this.exercise);
+      return of(this.transformExercise(this.exercise));
     } else {
       const url = `${environment.exerciseDBExerciseByIdUrl}/${id}`;
       return this.httpClient.get<Exercise>(url, this.options).pipe(
-        tap((data) => (this.exercise = data))
+        tap((data) => {
+          this.exercise = data;
+          this.transformExercise(this.exercise);
+        })
       );
     }
   }
-
+  
+  transformExercise(exercise: Exercise): Exercise {
+    return {
+      ...exercise,
+      name: this.uppercaseFirstLetter(exercise.name),
+      target: this.uppercaseFirstLetter(exercise.target),
+      bodyPart: this.uppercaseFirstLetter(exercise.bodyPart),
+      equipment: this.uppercaseFirstLetter(exercise.equipment)
+    };
+  }
+  
   getExercisesByTarget(target: string): Observable<Exercise[]> {
     const url: string = `${this.targetUrl + target}`;
     return this.httpClient.get<Exercise[]>(url, this.options);
@@ -88,6 +120,7 @@ export class ExerciseService {
       return of(this.targets);
     } else {
       return this.httpClient.get<string[]>(this.targetListUrl, this.options).pipe(
+        map((data) => data.map(target => this.uppercaseFirstLetter(target))),
         tap((data) => (this.targets = data))
       );
     }
@@ -99,6 +132,7 @@ export class ExerciseService {
       return of(this.bodyParts);
     } else {
     return this.httpClient.get<string[]>(this.bodyPartListUrl, this.options).pipe(
+      map((data) => data.map(bodyPart => this.uppercaseFirstLetter(bodyPart))),
       tap((data) => (this.bodyParts = data)));
     }
   }
@@ -109,6 +143,7 @@ export class ExerciseService {
       return of(this.equipment);
     } else {
     return this.httpClient.get<string[]>(this.equipmentListUrl, this.options).pipe(
+      map((data) => data.map(equipment => this.uppercaseFirstLetter(equipment))),
       tap((data) => (this.equipment = data)));
     }
   }

@@ -3,6 +3,8 @@ import { Exercise } from 'src/app/common/Exercise';
 import { ExerciseService } from 'src/app/services/exercise.service';
 import { OpenAiService } from 'src/app/services/openAi.service';
 import { Filter } from 'src/app/common/Filter';
+import { ActivatedRoute } from '@angular/router';
+import { WorkoutService } from 'src/app/services/workout.service';
 
 @Component({
   selector: 'app-exercise-list',
@@ -36,12 +38,19 @@ export class ExerciseListComponent implements OnInit {
       key: 'target', value: ''
     }
   };
-  private searchValue!:string 
+
+  private searchValue!:string
+
+  public workoutId?:string
+
   constructor(public exerciseService:ExerciseService,
-              public openAiService: OpenAiService) { }
+              private route: ActivatedRoute, 
+              private workoutService: WorkoutService) { }
   
   ngOnInit(): void {
-    // this.exerciseService.clearExercisesCache();
+    this.route.queryParams.subscribe((params) => {
+      this.workoutId = params['workoutId'];
+    });
     this.exerciseService.getExercises().subscribe(
       (data: Exercise[]) => {
         this.completeExerciseList = data;
@@ -64,6 +73,17 @@ export class ExerciseListComponent implements OnInit {
     this.loadPage(filteredList);
   }
 
+  addToWorkout(exercise: Exercise) {
+    if (this.workoutId) {
+      // Add the exercise to the workout with the corresponding ID
+      console.log(exercise)
+      this.workoutService.addExerciseToWorkout(this.workoutId, exercise);
+      // Optionally, you can display a success message or perform any other necessary actions.
+    } else {
+      // Handle the case where there is no valid workout ID.
+      // You can display an error message or prevent the user from adding the exercise.
+    }
+  }
 
   loadPage(data: Exercise[]) {
     this.totalElements = data.length || 0;
@@ -138,31 +158,6 @@ export class ExerciseListComponent implements OnInit {
     audio.play();
   }
 
-  // async generateAudio(instructions: string): Promise<string> {
-  //   const client = new TextToSpeechClient({
-  //     projectId: environment.GOOGLE_SPEECH_CREDENTIALS.project_id,
-  //     credentials: {
-  //       private_key: environment.GOOGLE_SPEECH_CREDENTIALS.private_key.replace(/\\n/g, '\n'),
-  //       client_email: environment.GOOGLE_SPEECH_CREDENTIALS.client_email,
-  //     },
-  //   });
-  
-  //   const request = {
-  //     input: { text: instructions },
-  //     voice: { languageCode: 'en-US', ssmlGender: 'NEUTRAL' as const },
-  //     audioConfig: { audioEncoding: 'MP3' as const},
-  //   };
-  //   const [response] = await client.synthesizeSpeech(request);
-  //   const audioContent = response.audioContent;
-  //   if (!audioContent) {
-  //     throw new Error('Failed to generate audio');
-  //   }
-  //   const audioBlob = new Blob([audioContent], { type: 'audio/mp3' });
-  //   const audioUrl = URL.createObjectURL(audioBlob);
-  
-  //   return audioUrl;
-  // }
-  
   updateFilterObj(filter: Filter): void {
     const filterKeys = Object.keys(this.filterObj);
     let isFilterObjEmpty = true; // Flag to track if the filter object is empty
@@ -178,7 +173,7 @@ export class ExerciseListComponent implements OnInit {
     }
   
     this.filterMode = !isFilterObjEmpty; // Update filterMode based on the empty state of filterObj
-    this.currentPage = 1; // Reset the current page to the first page
+    this.resetPage() // Reset the current page to the first page
     this.listExercises(); // Update the filtered list and pagination
   
     // Check if the filtered list is empty and reset the filter values including the input value
@@ -193,13 +188,13 @@ export class ExerciseListComponent implements OnInit {
   filterList({ bodypart, equipment, target }: FilterObj): Exercise[] {
     let filteredList = this.completeExerciseList
     if (bodypart.value.length > 0) {
-      filteredList = filteredList.filter(exercise => exercise.bodyPart === bodypart.value)
+      filteredList = filteredList.filter(exercise => exercise.bodyPart.toLowerCase() === bodypart.value.toLowerCase())
     }
     if (equipment.value.length > 0) {
-      filteredList = filteredList.filter(exercise => exercise.equipment === equipment.value)
+      filteredList = filteredList.filter(exercise => exercise.equipment.toLowerCase() === equipment.value.toLowerCase())
     }
     if (target.value.length > 0) {
-      filteredList = filteredList.filter(exercise => exercise.target === target.value)
+      filteredList = filteredList.filter(exercise => exercise.target.toLowerCase() === target.value.toLowerCase())
     }
     return filteredList;
   }

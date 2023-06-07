@@ -21,7 +21,8 @@ export class BodyPartExerciseFilterComponent implements OnInit {
   }
 
   getBodyParts() {
-    this.exerciseService.getBodyParts().subscribe(data => {
+    this.exerciseService.getBodyParts()
+    .subscribe(data => {
       this.bodyParts = data;
     })
   }

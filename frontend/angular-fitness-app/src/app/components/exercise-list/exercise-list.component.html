@@ -23,12 +23,13 @@
       <div class="card" style="margin-bottom: 60px">
         <img src="{{ tempExercise.gifUrl }}" class="card-img-top" alt="{{ tempExercise.name }}" />
         <div class="card-body text-center">
-          <a routerLink="/exercise/{{tempExercise.id}}">
+          <a routerLink="/exercise/details/{{tempExercise.id}}">
             <h5 class="card-title">{{ tempExercise.name }}</h5>
           </a>
           <p class="card-text">Target: {{ tempExercise.target }}</p>
           <p class="card-text">Bodypart: {{ tempExercise.bodyPart }}</p>
           <p class="card-text">Equipment: {{ tempExercise.equipment }}</p>
+          <button [disabled]="workoutId === undefined" class="btn btn-primary" (click)="addToWorkout(tempExercise)">Add to workout</button>
         </div>
       </div>
     </div>

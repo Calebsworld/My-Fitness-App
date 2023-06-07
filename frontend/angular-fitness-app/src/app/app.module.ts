@@ -20,12 +20,19 @@ import { WorkoutComponent } from './components/workout/workout.component';
 import { WorkoutListComponent } from './components/workout-list/workout-list.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { HomeComponent } from './components/home/home.component';
+import { WorkoutDetailComponent } from './components/workout-detail/workout-detail.component';
+import { GuideComponent } from './components/guide/guide.component';
+import { WorkoutFormComponent } from './components/workout-form/workout-form.component';
+import { WorkoutService } from './services/workout.service';
 
 
  const routes:Routes = [
   {path: '', component: HomeComponent},
-  {path: 'exercise/:id', component: ExerciseDetailComponent},
+  {path: 'exercise/details/:id', component: ExerciseDetailComponent},
+  {path: 'guide', component: GuideComponent},
   {path: 'exercise', component: ExerciseComponent},
+  {path: 'workout-details/:id', component: WorkoutDetailComponent},
+  {path: 'workout-form', component: WorkoutFormComponent},
   {path: 'workout', component: WorkoutComponent},
   {path: '**', redirectTo: '/exercise', pathMatch: 'full'}
  ];
@@ -40,10 +47,13 @@ import { HomeComponent } from './components/home/home.component';
     SearchExerciseComponent,
     ExerciseDetailComponent,
     ExerciseComponent,
-    WorkoutComponent,
     WorkoutListComponent,
+    WorkoutComponent,
     NavbarComponent,
     HomeComponent,
+    WorkoutDetailComponent,
+    GuideComponent,
+    WorkoutFormComponent
   ],
   imports: [
     NgbModule,
@@ -54,6 +64,7 @@ import { HomeComponent } from './components/home/home.component';
     HttpClientModule
   ],
   providers: [
+    WorkoutService,
     ExerciseService, 
     OpenAiService
   ],
