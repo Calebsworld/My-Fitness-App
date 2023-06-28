@@ -17,6 +17,7 @@ export class WorkoutFormComponent {
     exercises: [] 
   }
 
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -33,6 +34,7 @@ export class WorkoutFormComponent {
   submitForm() {
     this.workout.id = this.workoutId
     this.workoutService.updateWorkout(this.workoutId, this.workout);
-    this.router.navigate(['/exercise'], { queryParams: { workoutId: this.workout.id }});
+    this.router.navigate(['/exercise'], { queryParams: { workoutId: this.workout.id, 
+                                                        successMessage: 'Workout successfully created.' }});
   }
 }

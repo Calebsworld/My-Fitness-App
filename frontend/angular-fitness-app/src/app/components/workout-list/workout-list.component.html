@@ -1,5 +1,10 @@
 <div class="container">
-    
+
+  <div *ngIf="workoutDeleteMessage" class="alert alert-danger alert-dismissible fade show m-3" role="alert">
+    {{ workoutDeleteMessage }}
+    <button type="button" class="btn-close" aria-label="Close" (click)="workoutDeleteMessage = undefined"></button>
+  </div>
+
     <div class="row">
       
       <div class="col-md-12 mt-3">

@@ -1,5 +1,5 @@
 
-    <label for="target" class="form-label">Choose a target muscle:</label>
+    <label for="target" class="form-label fw-bold fs-5">Choose a target muscle:</label>
     <select name="target" id="target" [(ngModel)]="selectedValue" (ngModelChange)="onChange()" class="form-select mb-3">
         <option *ngIf="selectedValue.length === 0" value="" selected disabled>Select target</option>
         <option *ngFor="let tempTarget of targets" [value]="tempTarget" class="ms-2">

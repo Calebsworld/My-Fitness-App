@@ -1,7 +1,13 @@
 <div class="container">
-
-    <button (click)="createWorkout()" class="btn btn-primary">Create Workout</button>
-
-    <app-exercise-list />
-
-</div>
+    <div class="row" *ngIf="workoutId === undefined">
+      <div class="col-md-12 d-flex justify-content-center align-items-center">
+        <h2 class="text-center">Create a workout to get started</h2>
+        <button (click)="createWorkout()" class="btn btn-primary ms-3">Create Workout</button>
+      </div>
+    </div>
+    
+    <h2 *ngIf="workoutId !== undefined" class="text-center">Customize your workout by adding exercises that meet your fitness goals</h2>
+    
+    <app-exercise-list (workoutIdChanged)="onWorkoutIdChanged($event)"></app-exercise-list>
+  </div>
+  

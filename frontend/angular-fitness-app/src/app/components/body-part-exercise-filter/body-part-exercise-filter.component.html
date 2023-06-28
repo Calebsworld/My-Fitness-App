@@ -1,5 +1,5 @@
 
-  <label for="bodyPart" class="form-label">Choose a bodypart:</label>
+  <label for="bodyPart" class="form-label fw-bold fs-5">Choose a bodypart:</label>
   <select name="bodyPart" id="bodyPart" [(ngModel)]="selectedValue" (ngModelChange)="onChange()" class="form-select mb-3">
     <option *ngIf="selectedValue.length === 0" value="" selected disabled>Select bodyPart</option>
     <option *ngFor="let tempBodyPart of bodyParts" [value]="tempBodyPart" class="ms-2">

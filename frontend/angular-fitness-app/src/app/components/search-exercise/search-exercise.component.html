@@ -1,6 +1,10 @@
-<h1>Search By exercise:</h1>
-<input type="text" placeholder="Search by name" class="form-control" (keyup.enter)="onChange()" [(ngModel)]="searchValue"  />
-<button *ngIf="searchValue.length > 0" 
-    class="btn btn-primary mt-2 ms-2" type="button" (click)="onChange()">Search</button>
-<button *ngIf="searchValue.length > 0" 
-    class="btn btn-danger mt-2 ms-2" type="button" (click)="reset()">Reset</button>
+<div class="m-3">
+    <label class="text-lead mb-2 fw-bold fs-5">Search:</label>
+    <div class="input-group">
+      <span class="input-group-text"><i class="fas fa-search"></i></span>
+      <input type="text" placeholder="Search by name" class="form-control" (keyup.enter)="onChange()" [(ngModel)]="searchValue" />
+    </div>
+    <button *ngIf="searchValue.length > 0" class="btn btn-primary mt-2 ms-2" type="button" (click)="onChange()">Search</button>
+    <button *ngIf="searchValue.length > 0" class="btn btn-danger mt-2 ms-2" type="button" (click)="reset()">Reset</button>
+  </div>
+  

@@ -12,11 +12,14 @@ export class WorkoutListComponent implements OnInit {
   
   workouts:Workout[] = []
 
+  workoutDeleteMessage?:string
+
   constructor(private workoutService:WorkoutService, 
              private router:Router) {}
   
   ngOnInit(): void {
     this.updateWorkouts()
+    // get workouts from my db and render to the user
   }
 
   updateWorkouts() {
@@ -27,8 +30,18 @@ export class WorkoutListComponent implements OnInit {
     this.router.navigate(['/workout-details', id]);
   }
 
+  private showDeleteMessage(message?:string) {
+    if (message) {
+      setTimeout(() => {
+        this.workoutDeleteMessage = undefined
+      }, 2000)
+    }
+  }
+
   removeWorkout(id:string) {
     this.workoutService.removeWorkout(id)
+    this.workoutDeleteMessage = 'Workout successfully deleted'
+    this.showDeleteMessage(this.workoutDeleteMessage)
     this.updateWorkouts()
   }
 

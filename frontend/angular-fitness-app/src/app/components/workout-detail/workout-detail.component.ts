@@ -12,6 +12,7 @@ export class WorkoutDetailComponent implements OnInit {
 
   workoutId!:string
   workout!: Workout 
+  exerciseDeleteMessage?: string = undefined
 
   constructor(private workoutService:WorkoutService,
               private route:ActivatedRoute, 
@@ -28,6 +29,18 @@ export class WorkoutDetailComponent implements OnInit {
 
   removeExercise(exerciseId:number) {
     this.workoutService.removeExerciseFromWorkout(this.workoutId, exerciseId)
+    // if cant find the exercise with the given id after removal then run code below else, delete was unsuccessful.  
+    this.exerciseDeleteMessage = 'Exercise succesfully removed from the workout'
+    this.showDeleteMessage(this.exerciseDeleteMessage)
+    
+  }
+
+  showDeleteMessage(message?:string) {
+    if (message) {
+      setTimeout(() => {
+        this.exerciseDeleteMessage = undefined
+      }, 2000)
+    }
   }
 
   addExercise() {

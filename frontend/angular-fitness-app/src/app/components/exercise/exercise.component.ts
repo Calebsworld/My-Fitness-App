@@ -11,14 +11,17 @@ import * as uuid from "uuid"
 })
 export class ExerciseComponent implements OnInit {
 
-  workoutId!:number
+  public workoutId?:string
 
   constructor(private router: Router, 
               private workoutService: WorkoutService,
               private route: ActivatedRoute) {}
 
   ngOnInit(): void {
-   
+  }
+
+  onWorkoutIdChanged(workoutId: string) {
+    this.workoutId = workoutId
   }
 
   createWorkout() {

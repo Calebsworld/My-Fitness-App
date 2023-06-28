@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Exercise } from 'src/app/common/Exercise';
 import { ExerciseService } from 'src/app/services/exercise.service';
 import { OpenAiService } from 'src/app/services/openAi.service';
@@ -13,19 +13,23 @@ import { WorkoutService } from 'src/app/services/workout.service';
 })
 export class ExerciseListComponent implements OnInit {
   public currentPage:number = 1
-  public totalElements!:number;
-  public pageSize = 50;
+  public totalElements!:number
+  public pageSize = 50
   
   public pages:Exercise[][] = []
   public filteredPages:Exercise[][] = []
   
+  public dataRecieved:boolean = false;
+
   public exercises:Exercise[] = []
-  public completeExerciseList:Exercise[] = [];
+  public completeExerciseList:Exercise[] = []
   public filteredExerciseList:Exercise[] = []
-  public previousData: Exercise[] = [];
+  public previousData: Exercise[] = []
   
-  public filterMode:boolean = false;
-  public searchMode:boolean = false;
+  private searchValue!:string
+
+  public filterMode:boolean = false
+  public searchMode:boolean = false
   
   private filterObj: FilterObj = {
     bodypart: {
@@ -37,11 +41,13 @@ export class ExerciseListComponent implements OnInit {
     target: {
       key: 'target', value: ''
     }
-  };
+  }
 
-  private searchValue!:string
-
+  @Output() public workoutIdChanged:EventEmitter<string> = new EventEmitter<string>()
   public workoutId?:string
+
+  public workoutSuccessMessage?: string
+  public exerciseSuccessMessage?: string
 
   constructor(public exerciseService:ExerciseService,
               private route: ActivatedRoute, 
@@ -49,25 +55,49 @@ export class ExerciseListComponent implements OnInit {
   
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
-      this.workoutId = params['workoutId'];
-    });
+      this.workoutId = params['workoutId']
+      this.workoutSuccessMessage = params['successMessage']
+      if (!!this.workoutSuccessMessage) {
+        this.showWorkoutMessage(this.workoutSuccessMessage) 
+      }
+    })
+    this.workoutIdChanged.emit(this.workoutId);
+
     this.exerciseService.getExercises().subscribe(
       (data: Exercise[]) => {
-        this.completeExerciseList = data;
+        this.completeExerciseList = data
+        this.dataRecieved = true
         this.listExercises()
       }
     )
   }
 
+  showWorkoutMessage(message?:string) {
+    if (message) {
+      window.scrollTo(0, 0);
+      setTimeout(() => {
+        this.workoutSuccessMessage = undefined
+      }, 2000)
+    }
+  }
+
+  showExerciseMessage() {
+    this.exerciseSuccessMessage = 'Exercise successfully added to workout'
+    window.scrollTo(0, 0);
+    setTimeout(() => {
+      this.exerciseSuccessMessage = undefined
+    }, 3000)
+  }
+
   listExercises(): void {
-    let filteredList: Exercise[] = this.completeExerciseList;
+    let filteredList: Exercise[] = this.completeExerciseList
 
     if (this.filterMode) {
-      filteredList = this.filterList(this.filterObj);
+      filteredList = this.filterList(this.filterObj)
     }
 
     if (this.searchMode && this.searchValue) {
-      filteredList = this.searchByName(filteredList);
+      filteredList = this.searchByName(filteredList)
     }
 
     this.loadPage(filteredList);
@@ -76,8 +106,8 @@ export class ExerciseListComponent implements OnInit {
   addToWorkout(exercise: Exercise) {
     if (this.workoutId) {
       // Add the exercise to the workout with the corresponding ID
-      console.log(exercise)
       this.workoutService.addExerciseToWorkout(this.workoutId, exercise);
+      this.showExerciseMessage()
       // Optionally, you can display a success message or perform any other necessary actions.
     } else {
       // Handle the case where there is no valid workout ID.
@@ -86,11 +116,11 @@ export class ExerciseListComponent implements OnInit {
   }
 
   loadPage(data: Exercise[]) {
-    this.totalElements = data.length || 0;
+    this.totalElements = data.length || 0
     if (this.filterMode || this.searchMode) {
-      this.setFilteredPages(data);
+      this.setFilteredPages(data)
     } else {
-      this.setPages(data);
+      this.setPages(data)
     }
     this.displayPage()
     if (!this.isDataEqual(data, this.previousData)) {
