@@ -1,7 +1,6 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Exercise } from 'src/app/common/Exercise';
 import { ExerciseService } from 'src/app/services/exercise.service';
-import { OpenAiService } from 'src/app/services/openAi.service';
 import { Filter } from 'src/app/common/Filter';
 import { ActivatedRoute } from '@angular/router';
 import { WorkoutService } from 'src/app/services/workout.service';

@@ -18,11 +18,11 @@ export class WorkoutListComponent implements OnInit {
              private router:Router) {}
   
   ngOnInit(): void {
-    this.updateWorkouts()
+    this.listWorkouts()
     // get workouts from my db and render to the user
   }
 
-  updateWorkouts() {
+  listWorkouts() {
     this.workouts = this.workoutService.workouts
   }
 
@@ -42,7 +42,7 @@ export class WorkoutListComponent implements OnInit {
     this.workoutService.removeWorkout(id)
     this.workoutDeleteMessage = 'Workout successfully deleted'
     this.showDeleteMessage(this.workoutDeleteMessage)
-    this.updateWorkouts()
+    this.listWorkouts()
   }
 
 

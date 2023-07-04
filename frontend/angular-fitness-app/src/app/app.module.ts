@@ -1,4 +1,4 @@
-import { Component, NgModule } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http'
 
@@ -6,7 +6,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ExerciseListComponent } from './components/exercise-list/exercise-list.component';
 import { ExerciseService } from './services/exercise.service';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BodyPartExerciseFilterComponent } from './components/body-part-exercise-filter/body-part-exercise-filter.component';
 import { EquipmentExerciseFilterComponent } from './components/equipment-exercise-filter/equipment-exercise-filter.component';
 import { TargetExerciseFilterComponent } from './components/target-exercise-filter/target-exercise-filter.component';
@@ -56,6 +56,7 @@ import { WorkoutService } from './services/workout.service';
     WorkoutFormComponent
   ],
   imports: [
+    ReactiveFormsModule,
     NgbModule,
     RouterModule.forRoot(routes),
     FormsModule,
