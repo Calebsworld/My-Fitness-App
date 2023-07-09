@@ -1,13 +1,64 @@
 <div class="container">
     <div class="row" *ngIf="workoutId === undefined">
-      <div class="col-md-12 d-flex justify-content-center align-items-center">
+      <div class="col-md-8 d-flex justify-content-center align-items-center">
         <h2 class="text-center">Create a workout to get started</h2>
         <button (click)="createWorkout()" class="btn btn-primary ms-3">Create Workout</button>
       </div>
     </div>
     
     <h2 *ngIf="workoutId !== undefined" class="text-center">Customize your workout by adding exercises that meet your fitness goals</h2>
+
+    <div *ngIf="workoutSuccessMessage" class="alert alert-success alert-dismissible fade show m-2" role="alert">
+      {{ workoutSuccessMessage }}
+      <button type="button" class="btn-close" aria-label="Close" (click)="workoutSuccessMessage = undefined"></button>
+    </div>
     
-    <app-exercise-list (workoutIdChanged)="onWorkoutIdChanged($event)"></app-exercise-list>
+    <div class="row justify-content-center">
+      <div class="col-lg-6">
+        <app-search-exercise (initSearchValue)="initSearchValue($event)"></app-search-exercise>
+      </div>
+    </div>
+  
+    <div class="row justify-content-center mb-4">
+      <div class="col-lg-3">
+        <app-body-part-exercise-filter (filterEvent)="updateFilterObj($event)"></app-body-part-exercise-filter>
+      </div>
+      <div class="col-lg-3">
+        <app-equipment-exercise-filter (filterEvent)="updateFilterObj($event)"></app-equipment-exercise-filter>
+      </div>
+      <div class="col-lg-3">
+        <app-target-exercise-filter (filterEvent)="updateFilterObj($event)"></app-target-exercise-filter>
+      </div>
+    </div>
+
+
+    <app-exercise-list [exercises]="exercises" [workoutId]="workoutId"></app-exercise-list>
+
+    <ng-template #loadingTemplate>
+      <div class="row d-flex justify-content-center align-items-center m-3">
+        <div class="spinner-border text-primary" role="status" style="width: 5rem; height: 5rem;">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    </ng-template>
+    
+    <ng-template #noExercisesTemplate>
+      <div class="row d-flex justify-content-center align-items-center m-3">
+        <h2 class="text-center mt-2">No exercises found.</h2>
+      </div>
+    </ng-template>
+    
+    <ng-container *ngIf="exercises.length === 0">
+      <ng-container *ngIf="!dataReceived; then loadingTemplate; else noExercisesTemplate"></ng-container>
+    </ng-container>
+
+    <app-exercise-pagination  [(page)]="currentPage"
+    [pageSize]="pageSize"
+    [totalElements]="totalElements"
+    [exercises] = "exercises"
+    (pageChange)="onPageChange($event)"
+    (pageSizeChange)="onPageSizeChange($event)" 
+    ></app-exercise-pagination>
+
   </div>
   

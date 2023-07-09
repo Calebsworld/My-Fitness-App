@@ -1,19 +1,36 @@
 <div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <h2>Create Workout</h2>
+    </div>
+  </div>
   <div class="row">
     <div class="col-md-3"></div>
     <div class="col-md-6">
-      <form [formGroup]="workoutFormGroup" (ngSubmit)="submitForm()">  
-        <div class="form-group mb-3">
-          <label>Workout Name</label>
-          <input type="text" class="form-control" formControlName="name">
+      <div class="card mt-3">
+        <div class="card-body">
+          <form [formGroup]="workoutFormGroup" (ngSubmit)="submitForm()">
+            <div class="form-group mb-3">
+              <label>Workout Name</label>
+              <input type="text" class="form-control" formControlName="name">
+              <div *ngIf="isWorkoutNameInvalid()" class="text-danger p-1 m-1">
+                <div *ngIf="hasError('name', 'required')">
+                  Name is required 
+                </div>
+                <div *ngIf="hasError('name', 'minlength')">
+                  Name must be at least two characters
+                </div>
+              </div>
+            </div>
+            <div class="form-group mb-3">
+              <label>Workout Description</label>
+              <textarea class="form-control" formControlName="description"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary mb-3">Submit</button>
+            <button type="btn" class="btn btn-secondary ms-2 mb-3" (click)="handleCancel()">Cancel</button>
+          </form>
         </div>
-        <div class="form-group mb-3">
-          <label>Workout Description</label>
-          <textarea class="form-control" formControlName="description"></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary mb-3">Submit</button>
-        <button type="btn" class="btn btn-secondary ms-2 mb-3" (click)="handleCancel()">Cancel</button>
-      </form>
+      </div>
     </div>
     <div class="col-md-3"></div>
   </div>

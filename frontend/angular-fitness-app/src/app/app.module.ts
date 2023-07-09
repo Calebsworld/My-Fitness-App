@@ -24,6 +24,7 @@ import { WorkoutDetailComponent } from './components/workout-detail/workout-deta
 import { GuideComponent } from './components/guide/guide.component';
 import { WorkoutFormComponent } from './components/workout-form/workout-form.component';
 import { WorkoutService } from './services/workout.service';
+import { ExercisePaginationComponent } from './components/exercise-pagination/exercise-pagination.component';
 
 
  const routes:Routes = [
@@ -53,7 +54,8 @@ import { WorkoutService } from './services/workout.service';
     HomeComponent,
     WorkoutDetailComponent,
     GuideComponent,
-    WorkoutFormComponent
+    WorkoutFormComponent,
+    ExercisePaginationComponent
   ],
   imports: [
     ReactiveFormsModule,

@@ -36,17 +36,10 @@ export class WorkoutService {
   }
 
   addExerciseToWorkout(id: string, exercise: Exercise) {
-    const exerciseToAdd: Exercise = {
-      id: exercise.id,
-      name: exercise.name,
-      gifUrl: exercise.gifUrl,
-      target: exercise.target,
-      bodyPart: exercise.bodyPart,
-      equipment: exercise.equipment
-    };
+    const exerciseToAdd: Exercise = {...exercise};
     const workout = this.getWorkoutById(id);
     
-    if (workout) {
+    if (!!workout) {
       workout.exercises.push(exerciseToAdd);
     } else {
       console.log('Workout not found.');

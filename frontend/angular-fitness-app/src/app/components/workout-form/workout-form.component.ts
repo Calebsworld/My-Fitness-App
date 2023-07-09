@@ -1,8 +1,8 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { WorkoutService } from 'src/app/services/workout.service';
 import { Workout } from 'src/app/common/Workout';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 
 @Component({
@@ -11,8 +11,8 @@ import { Subject, takeUntil } from 'rxjs';
   styleUrls: ['./workout-form.component.css']
 })
 
-export class WorkoutFormComponent implements OnDestroy {
-  workoutId!: string;
+export class WorkoutFormComponent implements OnInit {
+  workoutId?: string;
   workout: Workout = { 
     name: '', 
     description: '', 
@@ -21,7 +21,7 @@ export class WorkoutFormComponent implements OnDestroy {
 
   workoutFormGroup!:FormGroup 
 
-  private unsubscribe$: Subject<void> = new Subject<void>();
+  #unsubscribe$: Subject<void> = new Subject<void>();
 
 
   constructor(
@@ -32,40 +32,40 @@ export class WorkoutFormComponent implements OnDestroy {
   ) {}
 
   ngOnInit() {
-    // Retrieve the workout ID from the query parameters
-    //TODO unsubscribe onDestroy
-    const subs = this.route.queryParams.pipe(
-      takeUntil(this.unsubscribe$)
-    ).subscribe((params) => {
-      this.workoutId = params['workoutId'];
-    });
+    // Retrieve the workout ID from the router state
+    this.workoutId = history.state.workoutId
 
     this.workoutFormGroup = this.formBuilder.group({
-      name: [''],
-      description: ['']
+      name: new FormControl('', [Validators.required, Validators.minLength(2)]),
+      description: new FormControl('', [Validators.required, Validators.minLength(5)])
     })
 
   }
 
-  ngOnDestroy(): void {
-    this.unsubscribe$.next();
-    this.unsubscribe$.complete();
-  }
-
   submitForm() {
+    console.log(this.workoutFormGroup.value)
     const {name, description} = this.workoutFormGroup.value
     this.workout.id = this.workoutId
     this.workout.name = name
     this.workout.description = description
-    this.workoutService.updateWorkout(this.workoutId, this.workout);
-    this.router.navigate(['/exercise'], { queryParams: { workoutId: this.workout.id, 
-                                                        successMessage: 'Workout successfully created.' }});
+    this.workoutService.updateWorkout(this.workoutId!, this.workout);
+    const data = {workoutId: this.workoutId, successMessage: 'Workout successfully created.' }
+    this.router.navigate(['/exercise'], { state: data });
   }
 
   handleCancel() {
     this.router.navigate(['/exercise'])
   }
 
+  isWorkoutNameInvalid() {
+    const workoutNameControl = this.workoutFormGroup.get('name')
+    return workoutNameControl?.invalid && (workoutNameControl.dirty || workoutNameControl.touched)
+  }
+
+  hasError(controlName: string, errorType: string): boolean {
+    const control = this.workoutFormGroup.get(controlName);
+    return !!control?.hasError(errorType);
+  }
 
 
 }

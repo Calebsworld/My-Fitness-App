@@ -1,32 +1,17 @@
-<div *ngIf="workoutSuccessMessage" class="alert alert-success alert-dismissible fade show m-2" role="alert">
-  {{ workoutSuccessMessage }}
-  <button type="button" class="btn-close" aria-label="Close" (click)="workoutSuccessMessage = undefined"></button>
-</div>
-
-<div *ngIf="exerciseSuccessMessage" class="alert alert-success alert-dismissible fade show m-2" role="alert">
-  {{ exerciseSuccessMessage }}
-  <button type="button" class="btn-close" aria-label="Close" (click)="exerciseSuccessMessage = undefined"></button>
+<div class="container">
+  <div class="row">
+    <div class="col-md-3"></div>
+    <div class="col-md-6">
+      <div *ngIf="exerciseSuccessMessage" class="alert alert-success alert-dismissible fade show mb-3 p-4" role="alert">
+        {{ exerciseSuccessMessage }}
+        <button type="button" class="btn-close" aria-label="Close" (click)="exerciseSuccessMessage = undefined"></button>
+      </div>
+    </div>
+    <div class="col-md-3"></div>
+  </div>
 </div>
 
 <div class="container">
-  <div class="row justify-content-center">
-    <div class="col-lg-6">
-      <app-search-exercise (initSearchValue)="initSearchValue($event)"></app-search-exercise>
-    </div>
-  </div>
-
-  <div class="row justify-content-center mb-4">
-    <div class="col-lg-3">
-      <app-body-part-exercise-filter (filterEvent)="updateFilterObj($event)"></app-body-part-exercise-filter>
-    </div>
-    <div class="col-lg-3">
-      <app-equipment-exercise-filter (filterEvent)="updateFilterObj($event)"></app-equipment-exercise-filter>
-    </div>
-    <div class="col-lg-3">
-      <app-target-exercise-filter (filterEvent)="updateFilterObj($event)"></app-target-exercise-filter>
-    </div>
-  </div>
-
   <div class="row row-cols-3 g-4">
     <div class="col" *ngFor="let tempExercise of exercises">
       <div class="card" style="margin-bottom: 60px">
@@ -43,43 +28,4 @@
       </div>
     </div>
   </div>
-
-  <div class="row d-flex justify-content-center align-items-center m-3" *ngIf="exercises.length === 0 && dataRecieved === false">
-    <div class="spinner-border text-primary" role="status" style="width: 5rem; height: 5rem;">
-      <span class="visually-hidden">Loading...</span>
-    </div>
-  </div>
-  
-  <div class="row d-flex justify-content-center align-items-center m-3" *ngIf="exercises.length === 0 && dataRecieved === true">
-    <h2 class="text-center mt-2"> No exercises found with those filter options </h2>
-  </div>
-
-
-  <div *ngIf="exercises.length > 0">
-    <div class="row">
-      <div class="col-md-6"></div>
-      <div class="col-md-6">
-        <div class="row justify-content-end">
-          <div class="col-md-9">
-            <ngb-pagination [(page)]="currentPage" [pageSize]="pageSize" [collectionSize]="totalElements"
-              (pageChange)="listExercises()" [maxSize]="3" [boundaryLinks]="true" class="pagination-centered">
-            </ngb-pagination>
-          </div>
-          <div class="col-md-3">
-            <div class="d-flex justify-content-end">
-              <span class="mt-2">Page Size</span>
-              <select [(ngModel)]="pageSize" (ngModelChange)="updatePageSize()">
-                <option selected="true">50</option>
-                <option>75</option>
-                <option>100</option>
-                <option>125</option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-
 </div>

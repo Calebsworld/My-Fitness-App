@@ -44,7 +44,8 @@ export class WorkoutDetailComponent implements OnInit {
   }
 
   addExercise() {
-    this.router.navigate(['/exercise'],  { queryParams: { workoutId: this.workout.id }})
+    const data = { workoutId: this.workout.id }
+    this.router.navigate(['/exercise'],  { state: data })
   }
   
 

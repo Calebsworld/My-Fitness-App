@@ -3,24 +3,33 @@
   <button type="button" class="btn-close" aria-label="Close" (click)="exerciseDeleteMessage = undefined"></button>
 </div>
 
-<div class="card workout-card">
-  <div class="card-body d-flex justify-content-between align-items-center">
-    <h2 class="card-title workout-name">{{ workout.name }}</h2>
-    <button class="btn btn-primary" (click)="addExercise()">
-      Add Exercise
-    </button>
+<div class="container">
+  <div class="row"></div>
+  <div class="row">
+    <div class="col-md-3"></div>
+    <div class="col-md-6">
+      <div class="card workout-card">
+        <div class="card-body d-flex justify-content-between align-items-center">
+          <h2 class="card-title workout-name">{{ workout.name }}</h2>
+          <button class="btn btn-primary" (click)="addExercise()">
+            Add Exercise
+          </button>
+        </div>
+        <p class="card-text text-lead ms-3">{{ workout.description }}</p>
+        <ul class="list-group exercise-list">
+          <li *ngFor="let exercise of workout.exercises" class="list-group-item exercise d-flex justify-content-between align-items-center">
+            <span class="exercise-name">{{ exercise.name }}</span>
+            <a class="btn btn-danger" (click)="removeExercise(exercise.id)">
+              <i class="fas fa-trash"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="col-md-3"></div>
+      <div class="mt-3">
+        <a routerLink="/workout">Go back to workout list</a>
+      </div>
+    </div>
   </div>
-  <p class="card-text text-lead ms-3">{{ workout.description }}</p>
-  <ul class="list-group exercise-list">
-    <li *ngFor="let exercise of workout.exercises" class="list-group-item exercise d-flex justify-content-between align-items-center">
-      <span class="exercise-name">{{ exercise.name }}</span>
-      <a class="btn btn-danger" (click)="removeExercise(exercise.id)">
-        <i class="fas fa-trash"></i>
-      </a>
-    </li>
-  </ul>
 </div>
 
-<div class="mt-3">
-  <a routerLink="/workout">Go back to workout list</a>
-</div>

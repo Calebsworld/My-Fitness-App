@@ -1,9 +1,8 @@
+import { WorkingSet } from "./WorkingSet";
+
 export class Exercise {
-  
-  sets?: {
-    reps: number;
-    weight: number;
-  }[]
+
+  sets?:WorkingSet[]
 
   constructor(
     public id: number,
