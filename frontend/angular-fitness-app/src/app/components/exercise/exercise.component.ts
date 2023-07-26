@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { WorkoutService } from 'src/app/services/workout.service';
 import { Workout } from 'src/app/common/Workout';
@@ -53,7 +53,7 @@ export class ExerciseComponent implements OnInit {
   constructor(private router: Router,
               private exerciseService:ExerciseService, 
               private workoutService: WorkoutService,
-              private route: ActivatedRoute) {}
+              private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     const data = history.state
@@ -70,6 +70,7 @@ export class ExerciseComponent implements OnInit {
         this.completeExerciseList = data
         this.dataReceived = true
         this.listExercises()
+        this.cdr.detectChanges()
       }
     )
   }

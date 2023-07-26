@@ -26,6 +26,15 @@ public class Workout {
                fetch = FetchType.LAZY)
     private Set<Exercise> exercises;
 
+    public Workout() {
+        exercises = Set.of();
+    }
+
+    // bi-directional relationship
+    public void addExercise(Exercise exercise) {
+        this.exercises.add(exercise);
+        exercise.setWorkout(this);
+    }
 
 
 

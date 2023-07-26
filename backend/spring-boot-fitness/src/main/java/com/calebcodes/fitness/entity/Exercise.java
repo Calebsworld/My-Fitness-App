@@ -18,9 +18,6 @@ public class Exercise {
     @Column(name="name", nullable = false)
     private String name;
 
-    @Column(name="exercise_id")
-    private String exerciseId;
-
     @Column(name="description")
     private String description;
 
@@ -40,6 +37,22 @@ public class Exercise {
     @JoinColumn(name = "workout_id")
     private Workout workout;
 
+    public Exercise() {
+    }
+
+    public void addWorkingSet(WorkingSet workingSet) {
+        this.workingSets.add(workingSet);
+        workingSet.setExercise(this);
+    }
+
+    public void removeWorkingSet(WorkingSet workingSet) {
+        this.workingSets.remove(workingSet);
+        workingSet.setExercise(null);
+    }
+
+    public void setWorkout(Workout workout) {
+        this.workout = workout;
+    }
 
 
 
