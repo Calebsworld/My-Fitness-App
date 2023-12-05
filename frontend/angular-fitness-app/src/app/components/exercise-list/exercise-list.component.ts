@@ -1,6 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Exercise } from 'src/app/common/Exercise';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ExerciseModalComponent } from '../exercise-modal/exercise-modal.component';
 import { WorkoutService } from 'src/app/services/workout.service';
 
 @Component({
@@ -10,39 +12,57 @@ import { WorkoutService } from 'src/app/services/workout.service';
 })
 export class ExerciseListComponent implements OnInit {
  
-  @Input() exercises!: Exercise[];
-  @Input() workoutId?: string;
-  
-  public exerciseSuccessMessage?: string
+  @Input() exercises!: Exercise[]
+  @Input() workoutId?: number
+  @Input() exerciseId?:number
 
-  constructor(private workoutService:WorkoutService,
-              private router:Router) { }
+  @Output() exerciseSuccessEvent = new EventEmitter<string>()
+
+  public exerciseSuccessMessage?: string
+  public exerciseErrorMessage?:string
+
+  constructor(private router:Router,
+              private modalService: NgbModal,
+              private workoutService:WorkoutService) { }
 
   
   ngOnInit(): void {
-    
+     // When the component loads then open the modal and pass exercise modal component. add the exercise id. and in modal recieve as input. 
+    if (!!this.workoutId && !!this.exerciseId) {
+      const modalRef = this.modalService.open(ExerciseModalComponent)
+      modalRef.componentInstance.workoutId = this.workoutId
+      modalRef.componentInstance.exerciseId = this.exerciseId
+      modalRef.result.then((result) => {
+        console.log(result)
+        if (result.status === 200) {
+          const message = result.message
+          this.router.navigate(['/workout-details', this.workoutId], { queryParams: { exerciseUpdateMessage: message }})     
+        } 
+    }).catch((error) => {
+        console.log(error);
+    });
+    }
   }
 
   addToWorkout(exercise: Exercise) {
     if (!!this.workoutId) {
-      // Add the exercise to the workout with the corresponding ID
-      this.workoutService.addExerciseToWorkout(this.workoutId, exercise);
-      this.showExerciseMessage()
-      // Optionally, you can display a success message or perform any other necessary actions.
-    } else {
-      // Handle the case where there is no valid workout ID.
-      // You can display an error message or prevent the user from adding the exercise.
-      console.log("Error adding exercise to workout.")
+      const modalRef = this.modalService.open(ExerciseModalComponent)
+      modalRef.componentInstance.exercise = exercise
+      modalRef.componentInstance.workoutId = this.workoutId
+      modalRef.result.then((result) => {
+        console.log(result)
+        if (result.status === 201) {
+            this.exerciseSuccessMessage = result.message;
+            this.exerciseSuccessEvent.emit(this.exerciseSuccessMessage)
+            this.workoutService._workoutChangedSubject.next(this.workoutId!)
+        } 
+    }).catch((error) => {
+        console.log(error);
+    });
     }
   }
 
-  showExerciseMessage() {
-    this.exerciseSuccessMessage = 'Exercise successfully added to workout'
-    window.scrollTo(0, 0);
-    setTimeout(() => {
-      this.exerciseSuccessMessage = undefined
-    }, 3000)
-  }
- 
+
+
 
 }

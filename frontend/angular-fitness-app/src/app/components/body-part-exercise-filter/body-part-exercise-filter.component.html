@@ -1,9 +1,12 @@
 
-  <label for="bodyPart" class="form-label fw-bold fs-5">Choose a bodypart:</label>
-  <select name="bodyPart" id="bodyPart" [(ngModel)]="selectedValue" (ngModelChange)="onChange()" class="form-select mb-3">
-    <option *ngIf="selectedValue.length === 0" value="" selected disabled>Select Bodypart</option>
-    <option *ngFor="let tempBodyPart of bodyParts" [value]="tempBodyPart" class="ms-2">
-      {{ tempBodyPart }}
-    </option>
-  </select>
-  <button *ngIf="selectedValue.length > 0" class="btn btn-danger" (click)="reset()">Reset</button>
+  <ng-container *ngIf="bodyParts$ | async as bodyParts">
+    <label for="bodyPart" class="form-label fw-bold fs-5">Choose a bodypart:</label>
+    <select name="bodyPart" id="bodyPart" [(ngModel)]="selectedValue" (ngModelChange)="onChange()" class="form-select mb-3">
+      <option *ngIf="selectedValue.length === 0" value="" selected disabled>Select Bodypart</option>
+      <option *ngFor="let tempBodyPart of bodyParts" [value]="tempBodyPart" class="ms-2">
+        {{ tempBodyPart }}
+      </option>
+    </select>
+    <button *ngIf="selectedValue.length > 0" class="btn btn-danger" (click)="reset()">Reset</button>
+  </ng-container>
+

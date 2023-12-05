@@ -1,4 +1,5 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Observable } from 'rxjs';
 import { Filter } from 'src/app/common/Filter';
 import { ExerciseService } from 'src/app/services/exercise.service';
 
@@ -10,23 +11,21 @@ import { ExerciseService } from 'src/app/services/exercise.service';
 export class TargetExerciseFilterComponent implements OnInit {
 
   public selectedValue:string = ''
-  public targets:string[] = [];
+  public targets$?:Observable<string[]>
   @Output() filterEvent = new EventEmitter<Filter>()
 
   constructor(private excerciseService:ExerciseService) { }
 
   ngOnInit(): void {
     this.getTargets()
-    }
+  }
 
   getTargets() {
-    this.excerciseService.getTargets().subscribe(data => {
-      this.targets = data;
-    })
+    this.targets$ = this.excerciseService.getTargets()
   }
 
   onChange() {
-    this.filterEvent.emit({key: 'target', value: this.selectedValue})
+    this.filterEvent.emit({key: 'target', value: this.selectedValue!})
   }
 
   reset(): void {

@@ -1,0 +1,53 @@
+
+<ng-container *ngIf="workout$ | async as workout">
+    <ng-container *ngIf="exercises$ | async as exercises">
+      <div class="container mt-5">
+        <div class="row justify-content-center">
+          <div class="col-md-6">
+            <div class="card workout-card shadow border-dark">
+  
+              <!-- Workout Header -->
+              <div class="card-header d-flex justify-content-between align-items-center bg-black text-white">
+                <h2 class="card-title workout-name mb-0 mx-auto">{{ workout.name }}</h2>
+              </div>
+  
+              <!-- Exercises List -->
+              <div class="card-body bg-light">
+                <ul class="list-group exercise-list">
+                  <h3>Exercises</h3>
+                  <li *ngFor="let exercise of exercises; let i = index" class="list-group-item exercise bg-gray-200">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <span class="exercise-name text-dark"> {{ exercise.name }}</span>
+                      <div class="d-flex">
+                        <!-- <button class="btn btn-primary btn-sm me-2" (click)="editExercise(workout.id!, exercise.id)">
+                            <i class="fas fa-edit"></i>
+                        </button> -->
+                        <!-- <button class="btn btn-danger btn-sm" (click)="removeExercise(exercise.id)">
+                            <i class="fas fa-trash"></i>
+                        </button> -->
+                    </div>
+                </div>
+                    <div class="mt-2">
+                      <div *ngFor="let groupedSet of groupedSets(exercise); let i = index; let isLast = last">
+                        <div class="d-inline-block mt-1">
+                    
+                            <!-- Display for multiple sets of the same type -->
+                            <span *ngIf="groupedSet.count > 1">
+                                {{ groupedSet.count }} sets X {{ groupedSet.set.reps }} reps @{{groupedSet.set.weight}}lb
+                            </span>
+                    
+                            <!-- Display for a single set -->
+                            <span *ngIf="groupedSet.count === 1">
+                                {{ groupedSet.count }} set X {{ groupedSet.set.reps }} reps @{{groupedSet.set.weight}}lb
+                            </span>
+                    
+                            <!-- Add a comma unless it's the last item in the loop -->
+                            <span *ngIf="!isLast">, </span>
+                    
+                        </div>
+                    </div>
+                    
+                    </div>
+                  </li>
+                </ul>
+              </div>

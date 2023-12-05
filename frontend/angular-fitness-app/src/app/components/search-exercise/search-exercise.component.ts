@@ -8,16 +8,34 @@ import { Component, EventEmitter, Output } from '@angular/core';
 export class SearchExerciseComponent {
 
   searchValue:string = ''
+  wasEmpty:boolean = true
   @Output() initSearchValue = new EventEmitter<string>()
 
   onChange() {
     this.initSearchValue.emit(this.searchValue.trim())
   }
 
+  handleBackspace($event: any): void {
+    if (!this.searchValue) {
+      if (!this.wasEmpty) {
+        // This block will execute only the first time the input becomes empty
+        console.log('empty value');
+        this.reset();
+        this.wasEmpty = true;
+      }
+      $event.preventDefault();
+    } else {
+      // If the input is not empty, reset the flag
+      this.wasEmpty = false;
+    }
+  }
+  
+
   reset() {
     this.searchValue = ''
     this.initSearchValue.emit(this.searchValue.trim())
   }
 
+  
 
 }

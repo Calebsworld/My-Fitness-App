@@ -8,6 +8,7 @@ import { Component, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
 export class HomeComponent {
 
   @ViewChild('video') videoElement!: ElementRef
+  videoSource:string = "../assets/pexels-tima-miroshnichenko-6390164-1080x1920-25fps.mp4"
 
   ngAfterViewInit() {
     const video = this.videoElement.nativeElement;
@@ -16,9 +17,7 @@ export class HomeComponent {
       video.play();
     });
   }
-  
-  videoSource:string = "../assets/pexels-tima-miroshnichenko-6390164-1080x1920-25fps.mp4"
-  // videoSource:String = "../assets/pexels-tima-miroshnichenko-6390164-720x1280-25fps.mp4"
+
 
 
 }

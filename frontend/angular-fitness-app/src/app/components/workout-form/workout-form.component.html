@@ -1,7 +1,11 @@
 <div class="container">
   <div class="row justify-content-center">
-    <div class="col-md-6">
+    <div class="col-md-6 mt-3">
       <h2>Create Workout</h2>
+    </div>
+    <div *ngIf="workoutExistMessage" class="alert alert-danger alert-dismissible fade show m-3" role="alert">
+      {{ workoutExistMessage }}
+      <button type="button" class="btn-close" aria-label="Close" (click)="workoutExistMessage = undefined"></button>
     </div>
   </div>
   <div class="row">
@@ -9,7 +13,7 @@
     <div class="col-md-6">
       <div class="card mt-3">
         <div class="card-body">
-          <form [formGroup]="workoutFormGroup" (ngSubmit)="submitForm()">
+          <form *ngIf="workoutFormGroup" [formGroup]="workoutFormGroup" (ngSubmit)="submitForm()">
             <div class="form-group mb-3">
               <label>Workout Name</label>
               <input type="text" class="form-control" formControlName="name">

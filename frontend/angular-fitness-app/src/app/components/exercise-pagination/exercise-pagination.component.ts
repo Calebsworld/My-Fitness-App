@@ -32,7 +32,6 @@ export class ExercisePaginationComponent implements OnInit, OnChanges {
 
   onPageChange() {
     this.pageChange.emit(this.page);
-    console.log()
   }
 
   onPageSizeChange() {

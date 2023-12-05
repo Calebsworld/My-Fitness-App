@@ -2,10 +2,10 @@ import { Exercise } from "./Exercise";
 
 export class Workout {
 
-    id?:string
+    id?:number
     name?:string
     description?:string
-    exercises:Exercise[] = []
+    exercises?:Exercise[]
 
     constructor() {}
 

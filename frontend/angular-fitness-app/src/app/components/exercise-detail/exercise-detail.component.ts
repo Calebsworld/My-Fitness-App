@@ -1,6 +1,6 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { Subject, takeUntil } from 'rxjs';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Observable } from 'rxjs';
 import { Exercise } from 'src/app/common/Exercise';
 import { ExerciseService } from 'src/app/services/exercise.service';
 
@@ -9,32 +9,23 @@ import { ExerciseService } from 'src/app/services/exercise.service';
   templateUrl: './exercise-detail.component.html',
   styleUrls: ['./exercise-detail.component.css']
 })
-export class ExerciseDetailComponent implements OnInit, OnDestroy {
+export class ExerciseDetailComponent implements OnInit {
 
-exercise?:Exercise;
-#unsubscribe = new Subject<void>()
+workoutId?: number 
+exercise$?:Observable<Exercise>;
 
 constructor(public route:ActivatedRoute, 
-            public exerciseService:ExerciseService) { }
+            private exerciseService:ExerciseService,
+            private router:Router) { }
 
 
   ngOnInit(): void {
+    this.workoutId = +this.route.snapshot.paramMap.get("workoutId")!
     this.getExerciseDetails()
   }
 
-  ngOnDestroy(): void {
-    this.#unsubscribe.next()
-    this.#unsubscribe.complete
-  }
-
-
   getExerciseDetails() {
-    const id:string = this.route.snapshot.paramMap.get("id")!
-    this.exerciseService.getExerciseById(id).pipe(
-      takeUntil(this.#unsubscribe)
-    ).subscribe(data => {
-      this.exercise = data
-    })
+    const id:string = this.route.snapshot.paramMap.get("exerciseId")!
+    this.exercise$ = this.exerciseService.getExerciseById(id)
   }
-
 }

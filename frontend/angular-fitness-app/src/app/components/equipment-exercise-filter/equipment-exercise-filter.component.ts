@@ -1,4 +1,5 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Observable } from 'rxjs';
 import { Filter } from 'src/app/common/Filter';
 import { ExerciseService } from 'src/app/services/exercise.service';
 
@@ -10,11 +11,10 @@ import { ExerciseService } from 'src/app/services/exercise.service';
 })
 export class EquipmentExerciseFilterComponent implements OnInit {
 
-   
   public selectedValue:string = '';
-  public equipment:string[] = [];
+  public equipment$?:Observable<string[]>
+  @Input() filterValue?:string 
   @Output() filterEvent = new EventEmitter<Filter>();
-
 
   constructor(private exerciseService:ExerciseService) { };
 
@@ -23,20 +23,16 @@ export class EquipmentExerciseFilterComponent implements OnInit {
   }
 
   getEquipmentList() {
-    this.exerciseService.getEquipment().subscribe(data => {
-      this.equipment = data;
-    })
+    this.equipment$ = this.exerciseService.getEquipment()
   }
 
   onChange() {
-    this.filterEvent.emit({key:'equipment', value: this.selectedValue})
+    this.filterEvent.emit({key:'equipment', value: this.selectedValue!})
   }
 
   reset(): void {
     this.selectedValue = '';
     this.onChange();
   }
-
-
 
 }

@@ -2,7 +2,7 @@ import { WorkingSet } from "./WorkingSet";
 
 export class Exercise {
 
-  sets?:WorkingSet[]
+  workingSet?:WorkingSet[]
 
   constructor(
     public id: number,
@@ -10,6 +10,8 @@ export class Exercise {
     public gifUrl: string,
     public target: string,
     public bodyPart: string,
-    public equipment: string
+    public equipment: string,
+    public secondaryMuscles: string[],
+    public instructions: string[]
   ) {}
 }

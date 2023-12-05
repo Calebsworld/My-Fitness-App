@@ -9,6 +9,9 @@ import { catchError, map } from 'rxjs/operators';
   providedIn: 'root',
 })
 export class ExerciseService {
+
+
+
   // These will store the data and will be used for caching
   private exercises: Exercise[] = [];  
   private exercise!: Exercise | undefined;
@@ -30,6 +33,7 @@ export class ExerciseService {
 
   private options = {
     headers: this.headers,
+    params: {limit: '1400'}
   };
 
   constructor(private httpClient: HttpClient) {}
@@ -47,7 +51,6 @@ export class ExerciseService {
           tap((data) => { 
             this.exercises = data;
             this.transformExercises(this.exercises);
-            console.log('data not cached')
           }),
           catchError(error => {
             console.error('Error fetching exercises:', error);
@@ -76,7 +79,6 @@ export class ExerciseService {
   getExerciseById(id: string): Observable<Exercise> {
     if (this.exercise) {
       // If the data is already cached, return it as an observable
-      console.log('data cached')
       return of(this.transformExercise(this.exercise));
     } else {
       const url = `${environment.exerciseDBExerciseByIdUrl}/${id}`;
@@ -116,7 +118,6 @@ export class ExerciseService {
 
   getTargets(): Observable<string[]> {
     if (this.targets.length > 0) {
-      console.log('data cached')
       return of(this.targets);
     } else {
       return this.httpClient.get<string[]>(this.targetListUrl, this.options).pipe(
@@ -128,7 +129,6 @@ export class ExerciseService {
 
   getBodyParts(): Observable<string[]> {
     if (this.bodyParts.length > 0) {
-      console.log('data cached')
       return of(this.bodyParts);
     } else {
     return this.httpClient.get<string[]>(this.bodyPartListUrl, this.options).pipe(
@@ -139,7 +139,6 @@ export class ExerciseService {
 
   getEquipment(): Observable<string[]> {
     if (this.equipment.length > 0) {
-      console.log('data cached')
       return of(this.equipment);
     } else {
     return this.httpClient.get<string[]>(this.equipmentListUrl, this.options).pipe(

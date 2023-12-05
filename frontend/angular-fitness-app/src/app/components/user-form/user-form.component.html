@@ -1,0 +1,67 @@
+<div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-6 mt-3">
+        <h2>Create User</h2>
+      </div>
+    </div>
+  
+    <div class="row">
+      <div class="col-md-3"></div>
+  
+      <div class="col-md-6">
+        <div class="card mt-3">
+          <div class="card-body">
+            <form *ngIf="userFormGroup" [formGroup]="userFormGroup" (ngSubmit)="submitForm()">
+              <div class="form-group mb-3">
+                <label>First Name</label>
+                <input type="text" class="form-control" formControlName="fName">
+                <div *ngIf="isFirstNameValid()" class="text-danger p-1 m-1">
+                  <ng-container *ngIf="hasError('fName', 'required')">
+                    <div>
+                      First Name is required
+                    </div>
+                  </ng-container>
+                  <ng-container *ngIf="!hasError('fName', 'required') && hasError('fName', 'minlength')">
+                    <div>
+                      First Name should have a minimum length of 2 characters
+                    </div>
+                  </ng-container>
+                  <ng-container *ngIf="!hasError('fName', 'required') && !hasError('fName', 'minlength') && hasError('fName', 'notOnlyWhitespace')">
+                    <div>
+                      First Name should not contain only white spaces
+                    </div>
+                  </ng-container>
+                </div>
+              </div>
+  
+              <div class="form-group mb-3">
+                <label>Last Name</label>
+                <input type="text" class="form-control" formControlName="lName">
+                <div *ngIf="isLastNameValid()" class="text-danger p-1 m-1">
+                  <ng-container *ngIf="hasError('lName', 'required')">
+                    <div>
+                      Last Name is required
+                    </div>
+                  </ng-container>
+                  <ng-container *ngIf="!hasError('lName', 'required') && hasError('lName', 'minlength')">
+                    <div>
+                      Last Name should have a minimum length of 2 characters
+                    </div>
+                  </ng-container>
+                  <ng-container *ngIf="!hasError('lName', 'required') && !hasError('lName', 'minlength') && hasError('lName', 'notOnlyWhitespace')">
+                    <div>
+                      Last Name should not contain only white spaces
+                    </div>
+                  </ng-container>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary mb-3">Submit</button>
+            </form>
+          </div>
+        </div>
+      </div>
+  
+      <div class="col-md-3"></div>
+    </div>
+  </div>
+  

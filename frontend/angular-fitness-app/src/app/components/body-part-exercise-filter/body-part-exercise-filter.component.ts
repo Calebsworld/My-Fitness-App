@@ -1,4 +1,5 @@
 import { Component, OnInit, EventEmitter, Output } from '@angular/core';
+import { Observable } from 'rxjs';
 import { Filter } from 'src/app/common/Filter';
 import { ExerciseService } from 'src/app/services/exercise.service';
 
@@ -8,10 +9,10 @@ import { ExerciseService } from 'src/app/services/exercise.service';
   styleUrls: ['./body-part-exercise-filter.component.css']
 })
 
-export class BodyPartExerciseFilterComponent implements OnInit {
+export class BodyPartExerciseFilterComponent implements OnInit{
  
   public selectedValue: string = '';
-  public bodyParts:string[] = [];
+  public bodyParts$?:Observable<string[]>
   @Output() filterEvent = new EventEmitter<Filter>();
  
   constructor(private exerciseService: ExerciseService) { };
@@ -21,14 +22,11 @@ export class BodyPartExerciseFilterComponent implements OnInit {
   }
 
   getBodyParts() {
-    this.exerciseService.getBodyParts()
-    .subscribe(data => {
-      this.bodyParts = data;
-    })
+    this.bodyParts$ = this.exerciseService.getBodyParts()
   }
 
   onChange(): void {
-    this.filterEvent.emit({key: 'bodypart', value: this.selectedValue})
+    this.filterEvent.emit({key: 'bodypart', value: this.selectedValue!})
   }
 
   reset(): void {

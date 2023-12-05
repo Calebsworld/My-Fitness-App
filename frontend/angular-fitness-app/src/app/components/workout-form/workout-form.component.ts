@@ -3,7 +3,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { WorkoutService } from 'src/app/services/workout.service';
 import { Workout } from 'src/app/common/Workout';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { WorkoutFormValidation } from 'src/app/common/WorkoutFormValidation';
+import { FormValidation } from 'src/app/common/FormValidation';
+import { Observable } from 'rxjs';
+
 
 @Component({
   selector: 'app-workout-form',
@@ -13,52 +15,90 @@ import { WorkoutFormValidation } from 'src/app/common/WorkoutFormValidation';
 
 export class WorkoutFormComponent implements OnInit {
 
-  workoutId?: string;
-  workout: Workout = { 
-    name: '', 
-    description: '', 
-    exercises: [] 
-  }
-
   workoutFormGroup!:FormGroup 
+  workoutResponse$?: Observable<any>
+  workoutExistMessage?: String
 
+  workoutId?:number 
+  workout$?: Observable<Workout>
+  routeUrl?:string
 
   constructor(
-    private route: ActivatedRoute,
     private router: Router,
     private workoutService: WorkoutService,
-    private formBuilder:FormBuilder
+    private formBuilder:FormBuilder,
+    private route:ActivatedRoute
   ) {}
 
   ngOnInit() {
-    // Retrieve the workout ID from the router state
-    this.workoutId = history.state.workoutId
-    this.workoutFormGroup = this.formBuilder.group({
-      name: new FormControl('', [Validators.required, Validators.minLength(2), WorkoutFormValidation.notOnlyWhitespace]),
-      description: new FormControl('', [Validators.required, Validators.minLength(5), WorkoutFormValidation.notOnlyWhitespace])
-    })
+    this.route.paramMap.subscribe(params => {
+      this.workoutId = +params.get('id')!;
+      if (!this.workoutId) {
+        this.initializeNewWorkoutForm();
+        this.routeUrl = '/exercise'
+      } else {
+        this.loadExistingWorkoutForm(this.workoutId);
+        this.routeUrl = '/workout'
+      }
+    });
+}
 
-  }
+initializeNewWorkoutForm() {
+    this.workoutFormGroup = this.formBuilder.group({
+        name: new FormControl('', [Validators.required, Validators.minLength(2), FormValidation.notOnlyWhitespace]),
+        description: new FormControl('', [Validators.required, Validators.minLength(5), FormValidation.notOnlyWhitespace])
+    });
+}
+
+loadExistingWorkoutForm(workoutId: number) {
+    this.workoutService.getWorkoutById(workoutId).subscribe(workout => {
+      console.log('Received workout:', workout);
+        this.workoutFormGroup = this.formBuilder.group({
+            name: new FormControl(workout.name, [Validators.required, Validators.minLength(2), FormValidation.notOnlyWhitespace]),
+            description: new FormControl(workout.description, [Validators.required, Validators.minLength(5), FormValidation.notOnlyWhitespace])
+        });
+    });
+}
+
 
   submitForm() {
-    console.log(this.workoutFormGroup.value)
-    
     if (this.workoutFormGroup.invalid) {
       this.workoutFormGroup.markAllAsTouched()
       return
     }
+    if (!!this.workoutId) {
+      this.updateWorkout()
+    } else {
+      this.createWorkout()
+    }
 
+  }
+
+  createWorkout() {
     const {name, description} = this.workoutFormGroup.value
-    this.workout.id = this.workoutId
-    this.workout.name = name
-    this.workout.description = description
-    this.workoutService.updateWorkout(this.workoutId!, this.workout);
-    const data = {workoutId: this.workoutId, successMessage: 'Workout successfully created.' }
-    this.router.navigate(['/exercise'], { state: data });
+    const workoutToSave:Workout = { name, description}
+    this.workoutService.addOrUpdateWorkout(workoutToSave).subscribe(
+      (res:WorkoutDto) => {
+        if (res.status === 201) {
+          this.router.navigate([`/exercise/workout/${res.id}`], { queryParams: { workoutSuccessMessage: res.message }});
+        }
+      })
+  }
+
+  updateWorkout() {
+    const {name, description} = this.workoutFormGroup.value
+    const workoutToSave:Workout = { id: this.workoutId, name, description}   
+    this.workoutService.addOrUpdateWorkout(workoutToSave).subscribe(
+      (res:WorkoutDto) => {
+        console.log(res.status)
+        if (res.status === 200) {
+          this.router.navigate(['/exercise'], { queryParams: {workoutId: res.id, workoutSuccessMessage: res.message } });
+        }
+      })  
   }
 
   handleCancel() {
-    this.router.navigate(['/exercise'])
+    this.router.navigate([this.routeUrl])
   }
 
   isWorkoutNameInvalid() {
@@ -72,9 +112,18 @@ export class WorkoutFormComponent implements OnInit {
     }
 
   hasError(controlName: string, errorType: string): boolean {
-    const control = this.workoutFormGroup.get(controlName);
+    const control = this.workoutFormGroup?.get(controlName);
     return !!control?.hasError(errorType);
   }
 
 
 }
+
+export interface WorkoutDto {
+  id: number;
+  name: string;
+  description: string;
+  message: string;
+  status: number;
+}
+

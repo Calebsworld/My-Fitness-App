@@ -1,13 +1,21 @@
 package com.calebcodes.fitness.entity;
 
+import com.calebcodes.fitness.dto.ExerciseDto;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "exercise")
 @Data
+@ToString(exclude = {"workout", "workingSet"})
+@EqualsAndHashCode(exclude = {"workout", "workingSet"})
 public class Exercise {
 
     @Id
@@ -30,9 +38,17 @@ public class Exercise {
     @Column(name="equipment")
     private String equipment;
 
-    @OneToMany(mappedBy = "exercise")
-    private List<WorkingSet> workingSets;
+    @Column(name="gifUrl")
+    private String gifUrl;
 
+    @JsonManagedReference
+    @OneToMany(mappedBy = "exercise",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY)
+    private List<WorkingSet> workingSet = new ArrayList<>();
+
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "workout_id")
     private Workout workout;
@@ -41,18 +57,16 @@ public class Exercise {
     }
 
     public void addWorkingSet(WorkingSet workingSet) {
-        this.workingSets.add(workingSet);
+        this.workingSet.add(workingSet);
         workingSet.setExercise(this);
     }
 
+
     public void removeWorkingSet(WorkingSet workingSet) {
-        this.workingSets.remove(workingSet);
+        this.workingSet.remove(workingSet);
         workingSet.setExercise(null);
     }
 
-    public void setWorkout(Workout workout) {
-        this.workout = workout;
-    }
 
 
 

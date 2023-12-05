@@ -1,73 +1,109 @@
 import { Injectable } from '@angular/core';
 import { Workout } from '../common/Workout';
 import { Exercise } from '../common/Exercise';
-import { Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { environment } from 'src/environments/environment.development';
+import { Router } from '@angular/router';
+import { WorkingSet } from '../common/WorkingSet';
 
 @Injectable({
   providedIn: 'root'
 })
 export class WorkoutService {
 
-  workouts:Workout[] = []
+_workoutChangedSubject = new BehaviorSubject<number|null>(null);
+workoutChanged$ = this._workoutChangedSubject.asObservable();
+
+
+  constructor(private httpClient:HttpClient,
+              private router:Router) {}
 
   // This service will be used to create, edit, and delete workout objects. 
-  // This service will also be used to add/remove exercises to a given workout.
+  // This service will also be used to add/remove exercises and update an exercise for a given workout.
 
-  getWorkoutById(workoutId:string) {
-    return this.workouts.find(workout => workout.id === workoutId)
+  getWorkouts(page:number, size:number): Observable<WorkoutWrapperDto> {
+    return this.httpClient.get<WorkoutWrapperDto>(`${environment.baseUrl}?page=${page}&size=${size}`)
   }
 
-  saveWorkout(workout:Workout) {
-    this.workouts.push(workout) 
+  getWorkoutById(workoutId:number) {
+    return this.httpClient.get<Workout>(`${environment.baseUrl}/${workoutId}`)
   }
 
-  updateWorkout(workoutId: string, updatedWorkout: Workout) {
-    // Find the workout with the matching ID
-    const workoutIndex = this.workouts.findIndex(workout => workout.id === workoutId);
-    if (workoutIndex !== -1) {
-      // Update the workout
-      this.workouts[workoutIndex] = updatedWorkout;
-    }
+  getExercises(workoutId:number) { 
+    return this.httpClient.get<Exercise[]>(`${environment.baseUrl}/${workoutId}/exercises`) 
   }
 
-  removeWorkout(id:string) {
-    if (this.workouts.length > 0)
-    this.workouts = this.workouts.filter(workout => workout.id !== id) 
+  getExercise(workoutId:number, exerciseId:number) {
+    return this.httpClient.get<Exercise>(`${environment.baseUrl}/${workoutId}/exercises/${exerciseId}`)
   }
 
-  addExerciseToWorkout(id: string, exercise: Exercise) {
-    const exerciseToAdd: Exercise = {...exercise};
-    const workout = this.getWorkoutById(id);
-    
-    if (!!workout) {
-      workout.exercises.push(exerciseToAdd);
-    } else {
-      console.log('Workout not found.');
-    }
+  getWorkingSets(workoutId:number, exerciseId:number) {
+    return this.httpClient.get<WorkingSet[]>(`${environment.baseUrl}/${workoutId}/exercises/${exerciseId}/workingSets`)
   }
 
-  removeExerciseFromWorkout(id:string, exerciseId:number) {
-   
-    let workout:Workout|undefined = undefined 
-    
-    if (this.workouts.length > 0) {
-      // find the workout by the id passed in.
-      workout = this.getWorkoutById(id)
-      if (workout) {
-        workout.exercises = workout.exercises?.filter(exercise => exercise.id !== exerciseId) 
-      } else {
-        console.log("Can't remove exercise from workout that does not exist")
-      }
-    }
+  addOrUpdateWorkout(workout:Workout): Observable<WorkoutResponse> {
+    return this.httpClient.post<WorkoutResponse>(environment.baseUrl, workout)
   }
 
+  removeWorkout(workoutId:number) {
+    return this.httpClient.delete<WorkoutResponse>(`${environment.baseUrl}/${workoutId}`)
+  }
 
-  constructor() { }
+  addOrUpdateExercise(workoutId:number, exerciseWrapperDto:ExerciseWrapperDto): Observable<ExerciseResponse> {
+    const url = `${environment.baseUrl}/${workoutId}/exercises`
+    return this.httpClient.post<ExerciseResponse>(url, exerciseWrapperDto)
+  }
+
+  removeExerciseFromWorkout(workoutId:number, exerciseId:number) {
+    const url = `${environment.baseUrl}/${workoutId}/exercises/${exerciseId}`
+    return this.httpClient.delete<ExerciseResponse>(url)
+  }
 
 }
 
-interface FormData {
-  name:string,
-  description?:string 
-
+interface WorkoutWrapperDto {
+  workouts: Workout[],
+  page: Page
 }
+
+interface Page {
+  currentPage: number,
+  pageSize: number,
+  totalPages: number,
+  totalElements: number,
+}
+
+export interface WorkoutResponse {
+  id: number;
+  name: string;
+  description: string;
+  message: string;
+  status: number;
+}
+
+export interface ExerciseResponse {
+  message: string,
+  exercise:Exercise,
+  status: number
+}
+
+export interface ExerciseDto {
+    id?: number, 
+    name?: string,
+    target?: string,
+    bodypart?: string,
+    equipment?: string,
+    gifUrl?: string
+}
+
+export interface ExerciseWrapperDto {
+  exerciseDto: ExerciseDto,
+  workingSetDtos: WorkingSet[],
+  workingSetIds: number[]
+}
+
+
+
+
+
