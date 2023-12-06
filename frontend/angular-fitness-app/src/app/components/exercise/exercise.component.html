@@ -1,4 +1,6 @@
-<div class="container">
+<ng-container *ngIf="isUserSet$"; else loadingUser>
+
+  <div class="container">
     <div class="row mt-3" *ngIf="!workoutId">
       <div class="col-md-2"></div>
       <div class="col-md-8 d-flex justify-content-center align-items-center">
@@ -9,7 +11,7 @@
     </div>
 
     <div class="row">
-      <h2 *ngIf="workoutId" class="text-center">Customize your workout by adding exercises that meet your fitness goals</h2>
+      <h2 *ngIf="workoutId" class="text-center">Add exercises to your Workout</h2>
 
       <div *ngIf="workoutSuccessMessage" class="alert alert-success alert-dismissible fade show m-2" role="alert">
         {{ workoutSuccessMessage }}
@@ -61,7 +63,7 @@
     </ng-template>
     
     <ng-container *ngIf="exercises.length === 0">
-      <ng-container *ngIf="!dataReceived; then loadingTemplate; else noExercisesTemplate"></ng-container>
+      <ng-container *ngIf="dataReceived$; then loadingTemplate; else noExercisesTemplate"></ng-container>
     </ng-container>
 
     <app-exercise-pagination  [(page)]="currentPage"
@@ -74,3 +76,8 @@
 
   </div>
   
+</ng-container>
+
+<ng-template #loadingUser>
+  <app-loading-template />
+</ng-template>

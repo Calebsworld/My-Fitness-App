@@ -9,9 +9,6 @@
         <a class="nav-link" aria-current="page" routerLink="/home">Home</a>
         <a class="nav-link" routerLink="/exercise">Exercises</a>
         <a class="nav-link" routerLink="/workout">Workouts</a>
-        <a (click)="handleLogout()" class="text-decoration-none text-light d-flex align-items-center" style="cursor: pointer;">
-          <i class="fas fa-sign-out-alt me-2"></i> Log out
-        </a>
 
         <ng-container *ngIf="((isAuthenticated$ | async) && (isUserSet$ | async)); else unAuthenticated">
           <app-profile></app-profile> 

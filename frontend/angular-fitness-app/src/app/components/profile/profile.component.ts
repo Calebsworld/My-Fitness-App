@@ -35,7 +35,6 @@ export class ProfileComponent implements OnInit {
 
   private setUser(): void {
     const storedUser = localStorage.getItem('user');
-
     if (storedUser) {
       this.storedUser = JSON.parse(storedUser);
     } else {
@@ -46,9 +45,6 @@ export class ProfileComponent implements OnInit {
   private LoadUser(): void {
     if (this.storedUser) {
       this.user$ = of(this.storedUser)
-      this.user$.forEach((val) => {
-        console.log(val)
-      })
     }
     
   } 

@@ -24,7 +24,6 @@ export class LoadUserComponent implements OnInit {
       .pipe(
         map((auth0User) => {
           let userObj = { email: auth0User?.email, avatar: auth0User?.picture };
-          console.log(userObj)
           return userObj;
         })
       )
@@ -38,13 +37,9 @@ export class LoadUserComponent implements OnInit {
           this.userService
             .GetUserByEmail(userEmail).subscribe({
               next: (userResponse) => {
-                console.log(userResponse);
                   if (userResponse.status === 200) {
                     this.userService.setUser(userResponse.user);
-                    // Will change this when I have a convenience method to return the user out of storage
-                    if (this.userService.isUserSet$.getValue()) {
-                      this.router.navigate(['exercise'])
-                    }
+                    this.router.navigate(['exercise'])
                   }
               }, 
               error: () => {
@@ -61,28 +56,6 @@ export class LoadUserComponent implements OnInit {
                     })
               }
             })
-            // .pipe(
-            //   catchError((error) => {
-            //     console.error(`Error fetching email:`, error);
-            //     if (error.status === 404) {
-            //       // User not found, navigate to the form route
-            //       this.router.navigate(['user-form']);
-            //     } else {
-            //       // Handle other errors
-            //       console.error('Other error occurred');
-            //     }
-            //     return throwError('Unable to fetch user with that email');
-            //   })
-            // )
-            // .subscribe((userResponse) => {
-            //   console.log(userResponse);
-            //   if (userResponse.status === 200) {
-            //     this.userService.setUser(userResponse.user);
-            //     if (JSON.parse(localStorage.getItem('user')!)) {
-            //       this.router.navigate(['exercise']);
-            //     }
-            //   }
-            // });
         }
       });
   }

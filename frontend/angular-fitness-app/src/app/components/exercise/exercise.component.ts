@@ -1,9 +1,10 @@
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Exercise } from 'src/app/common/Exercise';
 import { Filter } from 'src/app/common/Filter';
-import { Subject, retry, takeUntil } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, retry, takeUntil } from 'rxjs';
 import { ExerciseService } from 'src/app/services/exercise.service';
+import { UserService } from 'src/app/services/user.service';
 
 
 @Component({
@@ -13,31 +14,29 @@ import { ExerciseService } from 'src/app/services/exercise.service';
 })
 export class ExerciseComponent implements OnInit {
 
+  public exercises:Exercise[] = []
+  public dataReceived$ = new BehaviorSubject(false)
+  public isUserSet$!: Observable<boolean> 
+
+  private pages:Exercise[][] = []
+  private completeExerciseList:Exercise[] = []
+  private filteredExerciseList:Exercise[] = []
+  private previousData: Exercise[] = []
+
   public workoutId?:number
   public exerciseId?:number
-  public exercises:Exercise[] = []
+  workoutSuccessMessage?: string
+  exerciseSuccessMessage?: string
 
   public currentPage:number = 1
   public totalElements!:number
   public pageSize = 50
-  
-  #unsubscribe$ = new Subject<void>()
 
-  dataReceived:boolean = false;
-  filterMode:boolean = false
-  searchMode:boolean = false
-
-  searchValue!:string
-  workoutSuccessMessage?: string
-  exerciseSuccessMessage?: string
-
-  // Stores each page of exercises
-  public pages:Exercise[][] = []
+  private filterMode:boolean = false
+  private searchMode:boolean = false
   
-  public completeExerciseList:Exercise[] = []
-  public filteredExerciseList:Exercise[] = []
-  public previousData: Exercise[] = []
-  
+  private searchValue!:string
+
   private filterObj: FilterObj = {
     bodypart: {
       key: 'bodypart', value: ''
@@ -50,17 +49,20 @@ export class ExerciseComponent implements OnInit {
     }
   }
 
+  #unsubscribe$ = new Subject<void>()
 
-  constructor(private router: Router,
+
+  constructor(private userService:UserService,
               private exerciseService:ExerciseService, 
-              private cdRef: ChangeDetectorRef,
               private route:ActivatedRoute) {
               }
 
   ngOnInit(): void {
+    this.isUserSet$ = this.userService.isUserSet$
+
     this.route.paramMap.subscribe(  
       params => {
-        console.log(params)
+    
         if (params.has('workoutId')) {
           this.workoutId = +params.get('workoutId')!
         }
@@ -81,14 +83,14 @@ export class ExerciseComponent implements OnInit {
     if (this.workoutSuccessMessage) {
       this.showWorkoutMessage(this.workoutSuccessMessage)
     }
-    
+  
     this.exerciseService.getExercises().pipe(
     takeUntil(this.#unsubscribe$),
     retry(3)
     ).subscribe(
       (data: Exercise[]) => {
         this.completeExerciseList = data
-        this.dataReceived = true
+        this.dataReceived$.next(true)
         this.listExercises()
       }
     )
@@ -98,15 +100,6 @@ export class ExerciseComponent implements OnInit {
     this.#unsubscribe$.next()
     this.#unsubscribe$.complete
   }
-
-
-    showWorkoutMessage(message:string) {
-      window.scrollTo(0, 0);
-      setTimeout(() => {
-        this.workoutSuccessMessage = undefined
-        this.cdRef.detectChanges();
-      }, 2000)
-    }
 
   listExercises(): void {
     let filteredList: Exercise[] = this.completeExerciseList
@@ -131,7 +124,6 @@ export class ExerciseComponent implements OnInit {
     this.previousData = data;
   }
 
-  // creates a 2D array, where the inner array contains N exercises per page, and the outer array is the actual page.  
   setPages(data: Exercise[]) {
     this.pages = [];
     let counter = 0;
@@ -234,6 +226,12 @@ export class ExerciseComponent implements OnInit {
     }, 2000)
   }
 
+  showWorkoutMessage(message:string) {
+    window.scrollTo(0, 0);
+    setTimeout(() => {
+      this.workoutSuccessMessage = undefined
+    }, 2000)
+  }
 
 
 }
