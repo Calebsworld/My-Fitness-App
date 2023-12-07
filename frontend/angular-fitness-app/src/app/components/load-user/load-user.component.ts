@@ -23,6 +23,7 @@ export class LoadUserComponent implements OnInit {
     this.subscription = this.authService.user$
       .pipe(
         map((auth0User) => {
+          console.log(auth0User);
           let userObj = { email: auth0User?.email, avatar: auth0User?.picture };
           return userObj;
         })
@@ -34,28 +35,25 @@ export class LoadUserComponent implements OnInit {
         if (userEmail && userAvatar) {
           this.userService.setEmail(userEmail);
           this.userService.setAvatar(userAvatar);
-          this.userService
-            .GetUserByEmail(userEmail).subscribe({
-              next: (userResponse) => {
-                  if (userResponse.status === 200) {
-                    this.userService.setUser(userResponse.user);
-                    this.router.navigate(['exercise'])
-                  }
-              }, 
-              error: () => {
-                catchError((error) => {
-                      console.error(`Error fetching email:`, error);
-                      if (error.status === 404) {
-                        // User not found, navigate to the form route
-                        this.router.navigate(['user-form']);
-                      } else {
-                        // Handle other errors
-                        console.error('Other error occurred');
-                      }
-                      return throwError('Unable to fetch user with that email');
-                    })
+          this.userService.GetUserByEmail(userEmail).subscribe({
+            next: (userResponse) => {
+              if (userResponse.status === 200) {
+                this.userService.setUser(userResponse.user);
+                this.router.navigate(['exercise']);
               }
-            })
+            },
+            error: (error) => {
+              if (error.status === 404) {
+                // User not found, navigate to the form route
+                console.log('Should route to user-form');
+                this.router.navigate(['user-form']);
+              } else {
+                // Handle other errors
+                console.error('Other error occurred');
+              }
+              throwError('Unable to fetch user with that email');
+            },
+          });
         }
       });
   }

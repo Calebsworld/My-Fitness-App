@@ -9,7 +9,7 @@
         <a class="nav-link" aria-current="page" routerLink="/home">Home</a>
         <a class="nav-link" routerLink="/exercise">Exercises</a>
         <a class="nav-link" routerLink="/workout">Workouts</a>
-
+       
         <ng-container *ngIf="((isAuthenticated$ | async) && (isUserSet$ | async)); else unAuthenticated">
           <app-profile></app-profile> 
         </ng-container>

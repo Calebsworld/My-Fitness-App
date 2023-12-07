@@ -10,16 +10,18 @@ export class SignupButtonComponent {
 
   constructor(private auth: AuthService) {}
 
+
   handleSignUp(): void {
     this.auth.loginWithRedirect({
       appState: {
-        target: '/user-form',
+        target: '/load-user', // Specify the target route after login
       },
       authorizationParams: {
         screen_hint: 'signup',
       },
     });
   }
+
 
 
 
