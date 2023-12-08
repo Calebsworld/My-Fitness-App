@@ -18,7 +18,6 @@ export class UserService {
   private user?: User
   private userEmail?: string
   private userAvatar?: string
-  private userId?: number  
   private userWorkoutUrl?: string 
   isUserSet$ = new BehaviorSubject<boolean>(false);
 
@@ -155,7 +154,9 @@ export class UserService {
 
   addOrUpdateWorkout(workout:Workout): Observable<WorkoutResponse> {
     const url = this.getUserWorkoutUrl()
-    if (url) {
+    console.log("user url: " + url)
+    console.log(this.user)
+    if (!!url) {
       return this.httpClient.post<WorkoutResponse>(url, workout).pipe(
         catchError((error) => {
           console.error(`Error adding/updating workout: ${workout} :`, error);
@@ -213,21 +214,21 @@ export class UserService {
   }
 
   private constructUserWorkoutUrl(): void {
-    if (!this.userId) {
+    if (!this.user?.id) {
       this.userWorkoutUrl = undefined
     }
-    this.userWorkoutUrl = `${environment.newBaseUrl}/${this.userId}/workouts`
+
+    this.userWorkoutUrl = `${environment.newBaseUrl}/${this.user?.id}/workouts`
   }
 
   private getUserWorkoutUrl(): string | undefined {
-    if (this.userId && !this.userWorkoutUrl) {
+    if (this.user?.id && !this.userWorkoutUrl) {
       this.constructUserWorkoutUrl()
     }
     return this.userWorkoutUrl 
   }
-
-
 }
+
 interface WorkoutWrapperDto {
   workouts: Workout[],
   page: Page

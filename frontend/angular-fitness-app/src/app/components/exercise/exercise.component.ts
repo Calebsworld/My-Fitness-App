@@ -1,5 +1,5 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Exercise } from 'src/app/common/Exercise';
 import { Filter } from 'src/app/common/Filter';
 import { BehaviorSubject, Observable, Subject, retry, takeUntil } from 'rxjs';
@@ -62,7 +62,6 @@ export class ExerciseComponent implements OnInit {
 
     this.route.paramMap.subscribe(  
       params => {
-    
         if (params.has('workoutId')) {
           this.workoutId = +params.get('workoutId')!
         }

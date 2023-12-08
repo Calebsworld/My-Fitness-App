@@ -10,6 +10,8 @@ import com.calebcodes.fitness.entity.Exercise;
 import com.calebcodes.fitness.entity.User;
 import com.calebcodes.fitness.entity.WorkingSet;
 import com.calebcodes.fitness.entity.Workout;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,17 +26,20 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final WorkoutRepository workoutRepository;
     private final WorkingSetRepository workingSetRepository;
+    private final EntityManager entityManager;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, WorkoutRepository workoutRepository, WorkingSetRepository workingSetRepository) {
+    public UserServiceImpl(UserRepository userRepository, WorkoutRepository workoutRepository, WorkingSetRepository workingSetRepository, EntityManager entityManager) {
         this.userRepository = userRepository;
         this.workoutRepository = workoutRepository;
         this.workingSetRepository = workingSetRepository;
+        this.entityManager = entityManager;
     }
 
     @Override
@@ -122,7 +127,13 @@ public class UserServiceImpl implements UserService {
         if (workout.getId() == null) {
             user.addWorkout(workout);
             this.userRepository.save(user);
-            return new ResponseEntity<>(new WorkoutResponse(workout.getId(), workout.getName(), workout.getDescription(),
+            this.entityManager.refresh(user);
+            Long workoutId = user.getWorkouts().stream()
+                    .filter(w -> w.getName().equals(workout.getName()))
+                    .findFirst()
+                    .get()
+                    .getId();
+            return new ResponseEntity<>(new WorkoutResponse(workoutId, workout.getName(), workout.getDescription(),
                     "Workout added successfully", HttpStatus.CREATED.value()), HttpStatus.CREATED);
         }
 
