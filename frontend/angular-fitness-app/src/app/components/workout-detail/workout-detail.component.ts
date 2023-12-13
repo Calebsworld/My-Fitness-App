@@ -4,6 +4,7 @@ import { Observable, Subject, takeUntil } from 'rxjs';
 import { Exercise } from 'src/app/common/Exercise';
 import { WorkingSet } from 'src/app/common/WorkingSet';
 import { Workout } from 'src/app/common/Workout';
+import { UserService } from 'src/app/services/user.service';
 import { WorkoutService } from 'src/app/services/workout.service';
 
 @Component({
@@ -22,6 +23,7 @@ export class WorkoutDetailComponent implements OnInit, OnDestroy {
   #unsubscribe$ = new Subject<void>()
 
   constructor(private workoutService:WorkoutService,
+              private userService:UserService, 
               private route:ActivatedRoute, 
               private router:Router) {}
 
@@ -46,18 +48,18 @@ export class WorkoutDetailComponent implements OnInit, OnDestroy {
   }
 
   showWorkoutDetails() {
-      this.workout$ = this.workoutService.getWorkoutById(this.workoutId!)
+      this.workout$ = this.userService.getWorkoutById(this.workoutId!)
       this.showExercises()
   }
 
   showExercises() {
-    this.exercises$ = this.workoutService.getExercises(this.workoutId!)
+    this.exercises$ = this.userService.getExercises(this.workoutId!)
   }
 
   removeExercise(exerciseId:number) {
     if (!!this.workoutId) {
       this.exerciseDeleteMessage = undefined
-      this.workoutService.removeExerciseFromWorkout(this.workoutId, exerciseId).pipe(
+      this.userService.removeExerciseFromWorkout(this.workoutId, exerciseId).pipe(
         takeUntil(this.#unsubscribe$)
       ).subscribe(
         res => {

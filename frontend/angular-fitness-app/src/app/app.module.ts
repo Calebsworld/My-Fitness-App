@@ -43,7 +43,7 @@ import { UserFormComponent } from './components/user-form/user-form.component';
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: "full" },
   { path: 'callback', component: CallbackComponent },
-  { path: 'exercise/details/:workoutId/:exerciseId', component: ExerciseDetailComponent },
+  { path: 'exercise/details/:exerciseId', component: ExerciseDetailComponent },
   { path: 'exercise', component: ExerciseComponent },
   { path: 'exercise/:id', component: ExerciseComponent },
   { path: 'exercise/workout/:workoutId', component: ExerciseComponent },

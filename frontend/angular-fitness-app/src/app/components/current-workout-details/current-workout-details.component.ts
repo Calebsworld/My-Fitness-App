@@ -3,6 +3,7 @@ import { Observable, Subject, takeUntil } from 'rxjs';
 import { Exercise } from 'src/app/common/Exercise';
 import { WorkingSet } from 'src/app/common/WorkingSet';
 import { Workout } from 'src/app/common/Workout';
+import { UserService } from 'src/app/services/user.service';
 import { WorkoutService } from 'src/app/services/workout.service';
 
 @Component({
@@ -17,11 +18,13 @@ export class CurrentWorkoutDetailsComponent {
 
   private destroy$ = new Subject<void>();
 
-  constructor(private workoutService: WorkoutService) {}
+  constructor(private workoutService: WorkoutService,
+              private userService:UserService) {}
 
   ngOnInit() {
     console.log('in current workout details');
     if (!!this.workoutId) {
+      console.log(this.workoutId)
       this.showWorkoutDetails();
     }
 
@@ -35,14 +38,12 @@ export class CurrentWorkoutDetailsComponent {
   }
 
   showWorkoutDetails() {
-    // grab a workout that belongs to a user. I need to pass the user id and the workout id
-    this.workout$ = this.workoutService.getWorkoutById(this.workoutId!);
+    this.workout$ = this.userService.getWorkoutById(this.workoutId!)
     this.showExercises();
   }
 
   showExercises() {
-    // grab all the exercises from a specific workout
-    this.exercises$ = this.workoutService.getExercises(this.workoutId!);
+    this.exercises$ = this.userService.getExercises(this.workoutId!);
   }
 
   groupedSets(exercise: Exercise): { set: WorkingSet; count: number }[] {

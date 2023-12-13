@@ -5,6 +5,7 @@ import { NgbActiveModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { Subject, last, takeUntil } from 'rxjs';
 import { Exercise } from 'src/app/common/Exercise';
 import { WorkingSet } from 'src/app/common/WorkingSet';
+import { UserService } from 'src/app/services/user.service';
 import { WorkoutService } from 'src/app/services/workout.service';
 
 @Component({
@@ -26,12 +27,13 @@ export class ExerciseModalComponent {
   
   constructor(private formBuilder:FormBuilder,
     public activeModal: NgbActiveModal,
+    private userService:UserService,
     private workoutService:WorkoutService,
     private router:Router) {}
 
   ngOnInit(): void {
     if (!!this.workoutId && !!this.exerciseId) {
-    this.workoutService.getExercise(this.workoutId, this.exerciseId).subscribe(
+    this.userService.getExercise(this.workoutId, this.exerciseId).subscribe(
       data => {
         this.exercise = data
         console.log(this.exercise.workingSet)
@@ -40,7 +42,7 @@ export class ExerciseModalComponent {
         }
       })
     }
-  
+
     this.exerciseFormGroup = this.formBuilder.group({
       sets: this.formBuilder.array([this.formBuilder.group({
         reps: new FormControl(),
@@ -65,16 +67,16 @@ export class ExerciseModalComponent {
       workingSetIds: this.deletedIds
     }
     console.log(exerciseWrapperDto)
-    this.workoutService.addOrUpdateExercise(this.workoutId!, exerciseWrapperDto).pipe(
+    this.userService.addOrUpdateExercise(this.workoutId!, exerciseWrapperDto).pipe(
       takeUntil(this.#unsubscribe$)
     ).subscribe(
       res => {
         console.log(res)
         const data = {message: res.message, status: res.status}
-        if (res.status === 201) {
+        if (res.status === 200 || 201) {
           this.activeModal.close(data)
-        } else if (res.status === 200) {
-          this.activeModal.close(data)
+        } else {
+          console.log("Could ot add/update exercose to workout")
         }
       })
   }

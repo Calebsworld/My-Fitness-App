@@ -43,7 +43,6 @@ public class UserController {
         return userService.addUser(userDto);
     }
 
-    // Porbably going to take a File object as a parameter
     @PutMapping()
     public ResponseEntity<UserResponse> UpdateUser(@RequestBody UserDto userDto) {
         return this.userService.updateUser(userDto);

@@ -98,7 +98,6 @@ export class WorkoutFormComponent implements OnInit {
     this.userService
       .addOrUpdateWorkout(workoutToAdd)
       .subscribe((res: WorkoutDto) => {
-        console.log(res);
         if (res.status === 201) {
           this.router.navigate([`/exercise/workout/${res.id}`], {
             queryParams: { workoutSuccessMessage: res.message },
@@ -110,11 +109,11 @@ export class WorkoutFormComponent implements OnInit {
   updateWorkout() {
     const { name, description } = this.workoutFormGroup.value;
     const workoutToSave: Workout = { id: this.workoutId, name, description };
-    this.workoutService
+    this.userService
       .addOrUpdateWorkout(workoutToSave)
       .subscribe((res: WorkoutDto) => {
         console.log(res);
-        if (res.status === 200) {
+        if (res.status === 201) {
           this.router.navigate(['/exercise'], {
             queryParams: {
               // store the workout id

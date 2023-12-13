@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, Subject, map, takeUntil, tap } from 'rxjs';
 import { Workout } from 'src/app/common/Workout';
+import { UserService } from 'src/app/services/user.service';
 import { WorkoutService } from 'src/app/services/workout.service';
 
 @Component({
@@ -22,6 +23,7 @@ export class WorkoutComponent implements OnInit {
   #unsubscribe$ = new Subject<void>()
 
   constructor(private workoutService:WorkoutService, 
+              private userService:UserService,
              private router:Router) {}
   
   ngOnInit(): void {
@@ -34,7 +36,7 @@ export class WorkoutComponent implements OnInit {
   }
 
   listWorkouts() {
-    this.workoutResponse$ = this.workoutService.getWorkouts(this.currentPage-1, this.pageSize)
+    this.workoutResponse$ = this.userService.getWorkouts(this.currentPage-1, this.pageSize)
     
     this.workouts$ = this.workoutResponse$.pipe(
     map(response => response.workouts))
@@ -54,7 +56,7 @@ export class WorkoutComponent implements OnInit {
 
   removeWorkout(id:number) {
     this.workoutDeleteMessage = undefined
-    this.workoutService.removeWorkout(id).pipe(
+    this.userService.removeWorkout(id).pipe(
       takeUntil(this.#unsubscribe$)
     ).subscribe(
       res => {

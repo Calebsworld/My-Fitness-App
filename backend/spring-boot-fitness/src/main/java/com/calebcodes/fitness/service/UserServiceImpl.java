@@ -118,15 +118,25 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseEntity<Exercise> getExercise(Long id, Long exerciseId) {
-        return null;
+        User user = this.getUserByIdOrThrow(id);
+        user.getWorkouts().size();
+        Exercise exercise = user.getWorkouts().stream()
+                .flatMap(w -> w.getExercises().stream())
+                .filter(e -> e.getId().equals(exerciseId))
+                .findFirst()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Exercise not found"));
+        return new ResponseEntity<>(exercise, HttpStatus.OK);
     }
 
     @Override
     public ResponseEntity<WorkoutResponse> addOrUpdateWorkout(Long id, Workout workout) {
         User user = this.getUserByIdOrThrow(id);
+        user.getWorkouts().size();
         if (workout.getId() == null) {
-            user.addWorkout(workout);
-            this.userRepository.save(user);
+            if (!user.getWorkouts().contains(workout)) {
+                user.addWorkout(workout);
+                this.userRepository.save(user);
+            }
             this.entityManager.refresh(user);
             Long workoutId = user.getWorkouts().stream()
                     .filter(w -> w.getName().equals(workout.getName()))
@@ -136,12 +146,7 @@ public class UserServiceImpl implements UserService {
             return new ResponseEntity<>(new WorkoutResponse(workoutId, workout.getName(), workout.getDescription(),
                     "Workout added successfully", HttpStatus.CREATED.value()), HttpStatus.CREATED);
         }
-
         Workout foundWorkout = this.getWorkoutByIdOrThrow(user, workout.getId());
-        if (foundWorkout.getName().equals(workout.getName())) {
-            return new ResponseEntity<>(new WorkoutResponse(workout.getId(), workout.getName(), workout.getDescription(),
-                    "Workout already exists", HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
-        }
         foundWorkout.setExercises(workout.getExercises());
         foundWorkout.setName(workout.getName());
         foundWorkout.setDescription(workout.getDescription());
@@ -213,6 +218,7 @@ public class UserServiceImpl implements UserService {
         Workout workout = this.getWorkoutByIdOrThrow(user, workoutId);
         user.removeWorkout(workout);
         this.userRepository.save(user);
+        this.workoutRepository.deleteById(workoutId);
         return new ResponseEntity<>(new WorkoutResponse(workout.getId(), workout.getName(), workout.getDescription(),
                 "Workout deleted successfully", HttpStatus.OK.value()), HttpStatus.OK);
     }
@@ -243,21 +249,21 @@ public class UserServiceImpl implements UserService {
 
     private WorkingSet getWorkingSetByIdOrThrow(int workingSetId) {
         return workingSetRepository.findById(workingSetId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "WorkingSet not found"));
+                .orElse(null);
     }
 
     private Exercise getExerciseFromWorkoutByName(Workout workout, String exerciseName) {
         return workout.getExercises().stream()
                 .filter(e -> e.getName().equals(exerciseName))
                 .findFirst()
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Exercise not found"));
+                .orElse(null);
     }
 
     private Exercise getExerciseFromWorkoutById(Workout workout, Long exerciseId) {
         return workout.getExercises().stream()
                 .filter(e -> e.getId().equals(exerciseId))
                 .findFirst()
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Exercise not found"));
+                .orElse(null);
     }
 
 

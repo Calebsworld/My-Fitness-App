@@ -16,6 +16,7 @@ import { UserDto } from '../common/UserDto';
 export class UserService {
 
   private user?: User
+  private userObj!: UserObj
   private userEmail?: string
   private userAvatar?: string
   private userWorkoutUrl?: string 
@@ -41,6 +42,11 @@ export class UserService {
     this.isUserSet$.next(false)
   }
 
+  setUserObj(email:string, avatar:string): void {
+      this.userObj.avatar = avatar
+      this.userObj.email = email
+    }
+  
   getEmail() {
     return this.userEmail
   }
@@ -101,7 +107,7 @@ export class UserService {
     const url = this.getUserWorkoutUrl();
   
     if (url) {
-      return this.httpClient.get<Workout>(`url/${workoutId}`).pipe(
+      return this.httpClient.get<Workout>(`${url}/${workoutId}`).pipe(
         retry(3),
         catchError((error) => {
           // Handle the error here
@@ -121,7 +127,7 @@ export class UserService {
   getExercises(workoutId:number) { 
     const url = this.getUserWorkoutUrl()
     if (url) {
-      return this.httpClient.get<Exercise[]>(`url/${workoutId}/exercises`).pipe(
+      return this.httpClient.get<Exercise[]>(`${url}/${workoutId}/exercises`).pipe(
         retry(3),
         catchError((error) => {
           // Handle the error here
@@ -139,7 +145,7 @@ export class UserService {
   getExercise(workoutId:number, exerciseId:number) {
     const url = this.getUserWorkoutUrl()
     if (url) {
-      return this.httpClient.get<WorkingSet[]>(`url/${workoutId}/exercises/${exerciseId}`).pipe(
+      return this.httpClient.get<Exercise>(`${url}/${workoutId}/exercises/${exerciseId}`).pipe(
         retry(3),
         catchError((error) => {
           console.error(`Error fetching exercise from ${url} with this workoutId: ${workoutId} and this exerciseId: ${exerciseId} :`, error);
@@ -172,7 +178,7 @@ export class UserService {
   removeWorkout(workoutId:number) {
     const url = this.getUserWorkoutUrl()
     if (url) {
-      return this.httpClient.delete<WorkoutResponse>(`url/${workoutId}`).pipe(
+      return this.httpClient.delete<WorkoutResponse>(`${url}/${workoutId}`).pipe(
         catchError((error) => {
           console.error(`Error deleting workout with this workoutId: ${workoutId} :`, error);
           // You can choose to rethrow the error or return a default value
@@ -187,7 +193,7 @@ export class UserService {
   addOrUpdateExercise(workoutId:number, exerciseWrapperDto:ExerciseWrapperDto): Observable<ExerciseResponse> {
     const url = this.getUserWorkoutUrl()
     if (url) {
-      return this.httpClient.post<ExerciseResponse>(`url/${workoutId}/exercises`, exerciseWrapperDto).pipe(
+      return this.httpClient.post<ExerciseResponse>(`${url}/${workoutId}/exercises`, exerciseWrapperDto).pipe(
         catchError((error) => {
           console.error(`Error adding/updating exercise ${exerciseWrapperDto.exerciseDto} from this workoutId: ${workoutId} :`, error);
           return throwError(`Unable to add/update exercise from ${url}`);
@@ -202,7 +208,7 @@ export class UserService {
   removeExerciseFromWorkout(workoutId:number, exerciseId:number) {
     const url = this.getUserWorkoutUrl()
     if (url) {
-      return this.httpClient.delete<ExerciseResponse>(`url/${workoutId}/exercises/${exerciseId}`).pipe(
+      return this.httpClient.delete<ExerciseResponse>(`${url}/${workoutId}/exercises/${exerciseId}`).pipe(
         catchError((error) => {
           console.error(`Error deleting exercise with exerciseId: ${exerciseId} from this workoutId: ${workoutId} :`, error);
           return throwError(`Unable to add/update exercise from ${url}`);
@@ -217,7 +223,6 @@ export class UserService {
     if (!this.user?.id) {
       this.userWorkoutUrl = undefined
     }
-
     this.userWorkoutUrl = `${environment.newBaseUrl}/${this.user?.id}/workouts`
   }
 
@@ -274,4 +279,9 @@ export interface ExerciseWrapperDto {
   exerciseDto: ExerciseDto,
   workingSetDtos: WorkingSet[],
   workingSetIds: number[]
+}
+
+export type UserObj = {
+  email: string,
+  avatar: string
 }
