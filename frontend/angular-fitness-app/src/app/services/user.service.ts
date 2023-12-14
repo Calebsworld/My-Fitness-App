@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, catchError, retry, throwError } from 'rxjs';
+import { Injectable, OnInit } from '@angular/core';
+import { BehaviorSubject, Observable, Subject, catchError, of, retry, throwError } from 'rxjs';
 import { Exercise } from '../common/Exercise';
 import { WorkingSet } from '../common/WorkingSet';
 import { Workout } from '../common/Workout';
@@ -13,39 +13,45 @@ import { UserDto } from '../common/UserDto';
 @Injectable({
   providedIn: 'root'
 })
-export class UserService {
+export class UserService  {
 
   private user?: User
   private userObj!: UserObj
   private userEmail?: string
   private userAvatar?: string
   private userWorkoutUrl?: string 
-  isUserSet$ = new BehaviorSubject<boolean>(false);
-
 
   constructor(private httpClient:HttpClient,
               private router:Router) { }
 
   getUser(): User | undefined {
-    return this.user
+    const userJson = localStorage.getItem('user')
+    if (userJson) {
+      return JSON.parse(userJson)
+    }
+    return undefined
   }
 
   setUser(user: User): void {
     this.user = user
     this.constructUserWorkoutUrl()
     localStorage.setItem('user', JSON.stringify(user))
-    this.isUserSet$.next(true)
+    localStorage.setItem('isUserSet', JSON.stringify(true))
   }
 
   clearUser() {
     localStorage.removeItem('user')
-    this.isUserSet$.next(false)
+    localStorage.removeItem('isUserSet')
   }
 
   setUserObj(email:string, avatar:string): void {
       this.userObj.avatar = avatar
       this.userObj.email = email
-    }
+  }
+
+  getUserObj(): UserObj {
+    return this.userObj
+  }
   
   getEmail() {
     return this.userEmail

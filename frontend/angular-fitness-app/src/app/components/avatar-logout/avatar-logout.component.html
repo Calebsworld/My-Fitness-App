@@ -1,0 +1,18 @@
+<ng-container *ngIf="picture$ | async as picture">
+    <div class="d-flex align-items-center position-absolute top-0 end-0 m-2 profile-container">
+      <!--Make img clickable and route to profile -->
+      <img [src]="picture" alt="Avatar" class="rounded-circle me-3 mt-1" style="width: 50px; height: 50px;" />
+      <div class="d-flex flex-column bd-highlight mb-3">
+        <div>
+          <a routerLink="/update-profile" class="text-decoration-none text-light d-flex align-items-center">
+            <i class="fas fa-wrench me-2"></i> Update Profile
+          </a>
+        </div>
+        <div class="mt-1">
+          <a (click)="handleLogout()" class="text-decoration-none text-light d-flex align-items-center" style="cursor: pointer;">
+            <i class="fas fa-sign-out-alt me-2"></i> Log out
+          </a>
+        </div>
+      </div>
+    </div>
+  </ng-container>

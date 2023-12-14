@@ -37,6 +37,7 @@ import { LoadingTemplateComponent } from './components/loading-template/loading-
 import { ProfileComponent } from './components/profile/profile.component';
 import { LoadUserComponent } from './components/load-user/load-user.component';
 import { UserFormComponent } from './components/user-form/user-form.component';
+import { AvatarLogoutComponent } from './components/avatar-logout/avatar-logout.component';
 
 
 
@@ -50,7 +51,7 @@ const routes: Routes = [
   { path: 'home', component: HomeComponent },
   { path: 'load-user', component: LoadUserComponent },
   { path: 'user-form', component: UserFormComponent},
-  { path: 'profile', component: ProfileComponent},
+  { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard]},
   { path: 'workout/:workoutId/exercises/:exerciseId', component: ExerciseComponent },
   { path: 'workout-details/:id', component: WorkoutDetailComponent },
   { path: 'workout-form', component: WorkoutFormComponent, canActivate: [AuthGuard] },
@@ -87,6 +88,7 @@ const routes: Routes = [
     ProfileComponent,
     LoadUserComponent,
     UserFormComponent,
+    AvatarLogoutComponent,
 
   ],
   imports: [
@@ -100,6 +102,10 @@ const routes: Routes = [
     AuthModule.forRoot({
       domain: environment.auth0.domain,
       clientId: environment.auth0.client_id,
+      useRefreshTokens: true, // Enable refresh tokens
+      tokenRefreshThreshold: 30000, // Refresh tokens 30 seconds before expiration
+      // Configure cookies for token storage
+      cacheLocation: 'localstorage', // or 'cookies'
       authorizationParams: {
         redirect_uri: window.location.origin,
       },

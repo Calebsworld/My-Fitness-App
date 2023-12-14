@@ -5,6 +5,7 @@ import { Filter } from 'src/app/common/Filter';
 import { BehaviorSubject, Observable, Subject, retry, takeUntil } from 'rxjs';
 import { ExerciseService } from 'src/app/services/exercise.service';
 import { UserService } from 'src/app/services/user.service';
+import { AuthService } from '@auth0/auth0-angular';
 
 
 @Component({
@@ -50,16 +51,18 @@ export class ExerciseComponent implements OnInit {
   }
 
   #unsubscribe$ = new Subject<void>()
+  isAuthenticated$!: Observable<boolean>;
 
 
   constructor(private userService:UserService,
+              private authService: AuthService,
               private exerciseService:ExerciseService, 
               private route:ActivatedRoute) {
               }
 
   ngOnInit(): void {
-    this.isUserSet$ = this.userService.isUserSet$
-
+    // this.isUserSet$ = this.userService.isUserSet$
+    this.isAuthenticated$ = this.authService.isAuthenticated$
     this.route.paramMap.subscribe(  
       params => {
         if (params.has('workoutId')) {

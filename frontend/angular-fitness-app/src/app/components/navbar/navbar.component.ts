@@ -2,7 +2,6 @@ import { DOCUMENT } from '@angular/common';
 import { Component, Inject, OnInit } from '@angular/core';
 import { AuthService } from '@auth0/auth0-angular';
 import { Observable } from 'rxjs';
-import { User } from 'src/app/common/User';
 import { UserService } from 'src/app/services/user.service';
 
 
@@ -21,7 +20,6 @@ export class NavbarComponent implements OnInit {
   
   ngOnInit(): void {
     this.isAuthenticated$ = this.authService.isAuthenticated$
-    this.isUserSet$ = this.userService.isUserSet$
   }
 
   handleLogout(): void {
