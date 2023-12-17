@@ -1,4 +1,4 @@
-package com.calebcodes.fitness.dto;
+package com.calebcodes.fitness.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

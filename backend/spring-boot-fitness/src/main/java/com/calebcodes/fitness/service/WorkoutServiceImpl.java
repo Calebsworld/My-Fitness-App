@@ -2,13 +2,14 @@ package com.calebcodes.fitness.service;
 
 import com.calebcodes.fitness.converter.ExerciseMapper;
 import com.calebcodes.fitness.dao.ExerciseRepository;
-import com.calebcodes.fitness.dao.UserRepository;
 import com.calebcodes.fitness.dao.WorkingSetRepository;
 import com.calebcodes.fitness.dao.WorkoutRepository;
 import com.calebcodes.fitness.dto.*;
 import com.calebcodes.fitness.entity.Exercise;
 import com.calebcodes.fitness.entity.WorkingSet;
 import com.calebcodes.fitness.entity.Workout;
+import com.calebcodes.fitness.response.ExerciseResponse;
+import com.calebcodes.fitness.response.WorkoutResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

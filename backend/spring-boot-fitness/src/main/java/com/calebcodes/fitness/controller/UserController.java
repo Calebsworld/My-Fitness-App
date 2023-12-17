@@ -4,16 +4,14 @@ import com.calebcodes.fitness.dto.*;
 import com.calebcodes.fitness.entity.Exercise;
 import com.calebcodes.fitness.entity.User;
 import com.calebcodes.fitness.entity.Workout;
+import com.calebcodes.fitness.response.ExerciseResponse;
+import com.calebcodes.fitness.response.UserResponse;
+import com.calebcodes.fitness.response.WorkoutResponse;
 import com.calebcodes.fitness.service.UserService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.util.Optional;
 import java.util.Set;
 
 @RestController

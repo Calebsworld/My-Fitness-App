@@ -1,7 +1,7 @@
 package com.calebcodes.fitness.converter;
 
 import com.calebcodes.fitness.dto.UserDto;
-import com.calebcodes.fitness.dto.UserResponse;
+import com.calebcodes.fitness.response.UserResponse;
 import com.calebcodes.fitness.entity.User;
 
 public class UserMapper {

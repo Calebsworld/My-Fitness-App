@@ -4,10 +4,12 @@ import com.calebcodes.fitness.dto.*;
 import com.calebcodes.fitness.entity.Exercise;
 import com.calebcodes.fitness.entity.User;
 import com.calebcodes.fitness.entity.Workout;
+import com.calebcodes.fitness.response.ExerciseResponse;
+import com.calebcodes.fitness.response.UserResponse;
+import com.calebcodes.fitness.response.WorkoutResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 import java.util.Set;
 
 @Service

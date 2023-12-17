@@ -2,13 +2,12 @@ package com.calebcodes.fitness.service;
 
 import com.calebcodes.fitness.dto.*;
 import com.calebcodes.fitness.entity.Exercise;
-import com.calebcodes.fitness.entity.WorkingSet;
 import com.calebcodes.fitness.entity.Workout;
-import org.springframework.data.domain.Page;
+import com.calebcodes.fitness.response.ExerciseResponse;
+import com.calebcodes.fitness.response.WorkoutResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Set;
 
 @Service
