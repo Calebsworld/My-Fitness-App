@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, Subject, map, takeUntil, tap } from 'rxjs';
+import { Observable, Subject, map, of, takeUntil, tap } from 'rxjs';
 import { Workout } from 'src/app/common/Workout';
 import { UserService } from 'src/app/services/user.service';
 import { WorkoutService } from 'src/app/services/workout.service';
@@ -14,6 +14,7 @@ export class WorkoutComponent implements OnInit {
   workoutResponse$!:Observable<WorkoutWrapperDto>
   workouts$!:Observable <Workout[]>  
   page$!:Observable <Page>
+  isUserSet$!: Observable<boolean> 
 
   currentPage:number = 1
   pageSize:number = 10
@@ -22,11 +23,18 @@ export class WorkoutComponent implements OnInit {
   
   #unsubscribe$ = new Subject<void>()
 
-  constructor(private workoutService:WorkoutService, 
-              private userService:UserService,
+  constructor(private userService:UserService,
              private router:Router) {}
   
   ngOnInit(): void {
+    const storedUser = this.userService.getUser()
+    if (!storedUser) {
+      this.isUserSet$ = of(false)
+      this.router.navigate(['user-form'])
+    } else {
+      this.isUserSet$ = of(true)
+    }
+
     this.listWorkouts()
   }
 

@@ -1,7 +1,8 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService, User } from '@auth0/auth0-angular';
-import { Subscription, catchError, map, tap, throwError } from 'rxjs';
+import { Subscription, map, throwError } from 'rxjs';
 import { UserService } from 'src/app/services/user.service';
 
 @Component({
@@ -23,36 +24,35 @@ export class LoadUserComponent implements OnInit {
     this.subscription = this.authService.user$
       .pipe(
         map((auth0User) => {
-          console.log(auth0User);
-          let userObj = { email: auth0User?.email, avatar: auth0User?.picture };
-          return userObj;
+          let defaultUser: DefaultUser = { email: auth0User?.email, avatar: auth0User?.picture };
+          return defaultUser;
         })
       )
-      .subscribe((userObj) => {
-        let userEmail = userObj.email;
-        let userAvatar = userObj.avatar;
-
-        if (userEmail && userAvatar) {
-          this.userService.setEmail(userEmail);
-          this.userService.setAvatar(userAvatar);
-          this.userService.GetUserByEmail(userEmail).subscribe({
+      .subscribe((defaultUser) => {
+        if (defaultUser.email && defaultUser.avatar) {
+          this.userService.setDefaultUser(defaultUser.email, defaultUser.avatar)
+          this.userService.GetUserByEmail(defaultUser?.email).subscribe({
+            
             next: (userResponse) => {
               if (userResponse.status === 200) {
                 this.userService.setUser(userResponse.user);
-                this.router.navigate(['exercise']);
+                this.router.navigate(['profile']);
               }
             },
-            error: (error) => {
-              if (error.status === 404) {
-                // User not found, navigate to the form route
-                console.log('Should route to user-form');
+
+            error: (error: any) => {
+              if (error instanceof HttpErrorResponse) {
+                console.log(error)
+                if (error.status === 404) {
+                    // User not found, navigate to the form route
                 this.router.navigate(['user-form']);
+                }
               } else {
-                // Handle other errors
-                console.error('Other error occurred');
+                console.error('Other error occurred:' + error);
+                throwError(error.message);
               }
-              throwError('Unable to fetch user with that email');
             },
+
           });
         }
       });
@@ -61,4 +61,9 @@ export class LoadUserComponent implements OnInit {
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
   }
+}
+
+type DefaultUser = {
+  email?: string,
+  avatar?: string
 }

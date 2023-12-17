@@ -1,5 +1,5 @@
-import { Injectable, OnInit } from '@angular/core';
-import { BehaviorSubject, Observable, Subject, catchError, of, retry, throwError } from 'rxjs';
+import { Injectable} from '@angular/core';
+import { Observable, catchError, retry, throwError } from 'rxjs';
 import { Exercise } from '../common/Exercise';
 import { WorkingSet } from '../common/WorkingSet';
 import { Workout } from '../common/Workout';
@@ -15,10 +15,11 @@ import { UserDto } from '../common/UserDto';
 })
 export class UserService  {
 
-  private user?: User
-  private userObj!: UserObj
-  private userEmail?: string
-  private userAvatar?: string
+  private defaultUser: DefaultUser = {
+    email: '',
+    avatar: ''
+  }
+  
   private userWorkoutUrl?: string 
 
   constructor(private httpClient:HttpClient,
@@ -33,10 +34,13 @@ export class UserService  {
   }
 
   setUser(user: User): void {
-    this.user = user
-    this.constructUserWorkoutUrl()
     localStorage.setItem('user', JSON.stringify(user))
     localStorage.setItem('isUserSet', JSON.stringify(true))
+    this.constructUserWorkoutUrl()
+  }
+
+  removeDefaultUser(): void {
+    localStorage.removeItem('defaultUser')
   }
 
   clearUser() {
@@ -44,29 +48,18 @@ export class UserService  {
     localStorage.removeItem('isUserSet')
   }
 
-  setUserObj(email:string, avatar:string): void {
-      this.userObj.avatar = avatar
-      this.userObj.email = email
-  }
+  getDefaultUser(): DefaultUser | undefined {
+    const defaultUserJson = localStorage.getItem('defaultUser')
+    if (defaultUserJson) {
+      return JSON.parse(defaultUserJson)
+    }
+    return undefined
+  } 
 
-  getUserObj(): UserObj {
-    return this.userObj
-  }
-  
-  getEmail() {
-    return this.userEmail
-  }
-
-  setEmail(email:string) {
-    this.userEmail = email
-  }
-
-  getAvatar() {
-    return this.userAvatar
-  }
-
-  setAvatar(avatar:string) {
-    this.userAvatar = avatar
+  setDefaultUser(email:string, avatar:string): void {
+      this.defaultUser.email = email
+      this.defaultUser.avatar = avatar
+      localStorage.setItem('defaultUser', JSON.stringify(this.defaultUser))
   }
 
   // Retrieve the user by email address from auth0 service, use Hibernate built in method, if not exists then route to user-form component.
@@ -166,9 +159,8 @@ export class UserService  {
 
   addOrUpdateWorkout(workout:Workout): Observable<WorkoutResponse> {
     const url = this.getUserWorkoutUrl()
-    console.log("user url: " + url)
-    console.log(this.user)
-    if (!!url) {
+    
+    if (url) {
       return this.httpClient.post<WorkoutResponse>(url, workout).pipe(
         catchError((error) => {
           console.error(`Error adding/updating workout: ${workout} :`, error);
@@ -226,16 +218,21 @@ export class UserService  {
   }
 
   private constructUserWorkoutUrl(): void {
-    if (!this.user?.id) {
+   const storedUser = this.getUser()
+    if (!storedUser) {
       this.userWorkoutUrl = undefined
     }
-    this.userWorkoutUrl = `${environment.newBaseUrl}/${this.user?.id}/workouts`
+    console.log(storedUser)
+    this.userWorkoutUrl = `${environment.newBaseUrl}/${storedUser?.id}/workouts`
   }
 
   private getUserWorkoutUrl(): string | undefined {
-    if (this.user?.id && !this.userWorkoutUrl) {
+    const storedUser = this.getUser()
+
+    if (storedUser?.id && !this.userWorkoutUrl) {
       this.constructUserWorkoutUrl()
     }
+
     return this.userWorkoutUrl 
   }
 }
@@ -287,7 +284,7 @@ export interface ExerciseWrapperDto {
   workingSetIds: number[]
 }
 
-export type UserObj = {
-  email: string,
-  avatar: string
+export type DefaultUser = {
+  email?: string,
+  avatar?: string
 }

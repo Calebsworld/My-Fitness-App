@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { UserService } from 'src/app/services/user.service';
+import { DefaultUser, UserService } from 'src/app/services/user.service';
 import { FormValidation } from 'src/app/common/FormValidation';
 import { User } from 'src/app/common/User';
 import { Subscription, map } from 'rxjs';
@@ -30,36 +30,28 @@ export class UserFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.subscription.unsubscribe()
+    if (this.subscription) {
+      this.subscription.unsubscribe()
+    }
   }
 
   addUser() {
     const { fName, lName } = this.userFormGroup.value;
-    const email = this.userService.getEmail();
-    const avatar = this.userService.getAvatar(); 
+    const defaultUser: DefaultUser | undefined = this.userService.getDefaultUser()  
+    const userDto: UserDto = { firstName: fName, lastName: lName, email: defaultUser?.email, avatar: defaultUser?.avatar };
 
-    const userDto: UserDto = { firstName: fName, lastName: lName, email: email, avatar: avatar };
-    
-    // Subscribe to the addUser method
-    this.subscription = this.userService.addUser(userDto).subscribe(
-      (userResponse => {
+    this.subscription = this.userService.addUser(userDto).subscribe({
+      next: ((userResponse) => {
         if (userResponse.status === 201) {
-          // Update user in the service
           this.userService.setUser(userResponse.user);
-          
-          // Navigate to the 'exercise' route
+          this.userService.removeDefaultUser()
           this.router.navigate(['exercise']);
         }
       }),
-      error => {
-        console.error('Error adding user:', error);
-      },
-      () => {
-        // Clean up resources if needed
-        // console.log(this.userService.getUser());
-        // this.subscription.unsubscribe();
-      }
-    );
+      error: ((error) => {
+        console.log(error)
+      })
+    });
   }
   
   
@@ -68,14 +60,14 @@ export class UserFormComponent implements OnInit, OnDestroy {
       this.userFormGroup.markAllAsTouched()
       return
     }
-    const userId = this.userService.getUser()?.id
-    if (!userId) {
+    if (!this.user) {
+      console.log("in submit")
       this.addUser()
     }
   }
 
   isFirstNameValid() {
-    const userLastNameControl = this.userFormGroup.get('fNmame')
+    const userLastNameControl = this.userFormGroup.get('fName')
     return  userLastNameControl?.invalid && ( userLastNameControl.dirty || userLastNameControl.touched)
   }
 

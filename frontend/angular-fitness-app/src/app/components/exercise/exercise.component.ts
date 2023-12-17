@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Exercise } from 'src/app/common/Exercise';
 import { Filter } from 'src/app/common/Filter';
-import { BehaviorSubject, Observable, Subject, retry, takeUntil } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, of, retry, takeUntil } from 'rxjs';
 import { ExerciseService } from 'src/app/services/exercise.service';
 import { UserService } from 'src/app/services/user.service';
 import { AuthService } from '@auth0/auth0-angular';
@@ -57,11 +57,19 @@ export class ExerciseComponent implements OnInit {
   constructor(private userService:UserService,
               private authService: AuthService,
               private exerciseService:ExerciseService, 
-              private route:ActivatedRoute) {
+              private route:ActivatedRoute,
+              private router: Router) {
               }
 
   ngOnInit(): void {
-    // this.isUserSet$ = this.userService.isUserSet$
+    const storedUser = this.userService.getUser()
+    if (!storedUser) {
+      this.isUserSet$ = of(false)
+      this.router.navigate(['user-form'])
+    } else {
+      this.isUserSet$ = of(true)
+    }
+
     this.isAuthenticated$ = this.authService.isAuthenticated$
     this.route.paramMap.subscribe(  
       params => {
