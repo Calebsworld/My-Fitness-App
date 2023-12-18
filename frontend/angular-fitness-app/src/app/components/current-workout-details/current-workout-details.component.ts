@@ -18,16 +18,24 @@ export class CurrentWorkoutDetailsComponent {
 
   private destroy$ = new Subject<void>();
 
-  constructor(private workoutService: WorkoutService,
-              private userService:UserService) {}
+  constructor(private userService:UserService,
+              private workoutService:WorkoutService) {}
 
   ngOnInit() {
-    console.log('in current workout details');
     if (!!this.workoutId) {
-      console.log(this.workoutId)
-      this.showWorkoutDetails();
+      this.showWorkoutDetails()
     }
+    
+    this.refreshCurrentWorkout()
+  }
 
+  private showWorkoutDetails(): void {
+    this.workout$ = this.userService.getWorkoutById(this.workoutId!)
+    this.exercises$ = this.userService.getExercises(this.workoutId!);
+  }
+
+   // This will refetch the workout details from the backend every time a workout is modified
+  private refreshCurrentWorkout(): void {
     this.workoutService.workoutChanged$
       .pipe(takeUntil(this.destroy$))
       .subscribe((changedWorkoutId) => {
@@ -35,15 +43,6 @@ export class CurrentWorkoutDetailsComponent {
           this.showWorkoutDetails();
         }
       });
-  }
-
-  showWorkoutDetails() {
-    this.workout$ = this.userService.getWorkoutById(this.workoutId!)
-    this.showExercises();
-  }
-
-  showExercises() {
-    this.exercises$ = this.userService.getExercises(this.workoutId!);
   }
 
   groupedSets(exercise: Exercise): { set: WorkingSet; count: number }[] {

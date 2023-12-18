@@ -1,12 +1,11 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
-import { NgbActiveModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import { Subject, last, takeUntil } from 'rxjs';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { Subject, takeUntil } from 'rxjs';
 import { Exercise } from 'src/app/common/Exercise';
 import { WorkingSet } from 'src/app/common/WorkingSet';
 import { UserService } from 'src/app/services/user.service';
-import { WorkoutService } from 'src/app/services/workout.service';
 
 @Component({
   selector: 'app-exercise-modal',
@@ -28,15 +27,13 @@ export class ExerciseModalComponent {
   constructor(private formBuilder:FormBuilder,
     public activeModal: NgbActiveModal,
     private userService:UserService,
-    private workoutService:WorkoutService,
     private router:Router) {}
 
   ngOnInit(): void {
     if (!!this.workoutId && !!this.exerciseId) {
     this.userService.getExercise(this.workoutId, this.exerciseId).subscribe(
-      data => {
-        this.exercise = data
-        console.log(this.exercise.workingSet)
+      exercise => {
+        this.exercise = exercise
         if (this.exercise.workingSet) {
           this.addedSets = this.exercise.workingSet
         }
@@ -53,7 +50,6 @@ export class ExerciseModalComponent {
 
   onSubmit() {
     const sets:WorkingSet[] = this.addedSets 
-    console.log(sets)
     const exerciseWrapperDto:ExerciseWrapperDto = { 
       exerciseDto: {
         id: this.exerciseId, 
@@ -66,17 +62,16 @@ export class ExerciseModalComponent {
       workingSetDtos: sets,
       workingSetIds: this.deletedIds
     }
-    console.log(exerciseWrapperDto)
+    // refactor
     this.userService.addOrUpdateExercise(this.workoutId!, exerciseWrapperDto).pipe(
       takeUntil(this.#unsubscribe$)
     ).subscribe(
       res => {
-        console.log(res)
         const data = {message: res.message, status: res.status}
         if (res.status === 200 || 201) {
           this.activeModal.close(data)
         } else {
-          console.log("Could ot add/update exercose to workout")
+          console.log("Could ot add/update exercise to workout")
         }
       })
   }
@@ -93,7 +88,6 @@ export class ExerciseModalComponent {
     }
     this.addedSets.push(newSet)
     this.sets.at(this.sets.length-1).reset()
-    console.log(this.addedSets)
   }
 
   removeCurrentSet(set:WorkingSet) {

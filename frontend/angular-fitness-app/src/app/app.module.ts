@@ -22,7 +22,6 @@ import { NavbarComponent } from './components/navbar/navbar.component';
 import { HomeComponent } from './components/home/home.component';
 import { WorkoutDetailComponent } from './components/workout-detail/workout-detail.component';
 import { WorkoutFormComponent } from './components/workout-form/workout-form.component';
-import { WorkoutService } from './services/workout.service';
 import { ExercisePaginationComponent } from './components/exercise-pagination/exercise-pagination.component';
 import { ExerciseModalComponent } from './components/exercise-modal/exercise-modal.component';
 import { WorkoutPaginationComponent } from './components/workout-pagination/workout-pagination.component';
@@ -38,6 +37,7 @@ import { ProfileComponent } from './components/profile/profile.component';
 import { LoadUserComponent } from './components/load-user/load-user.component';
 import { UserFormComponent } from './components/user-form/user-form.component';
 import { AvatarLogoutComponent } from './components/avatar-logout/avatar-logout.component';
+import { UserService } from './services/user.service';
 
 
 
@@ -113,7 +113,7 @@ const routes: Routes = [
 
   ],
   providers: [
-    WorkoutService,
+    UserService,
     ExerciseService,
   ],
   bootstrap: [AppComponent]

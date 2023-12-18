@@ -28,7 +28,6 @@ export class WorkoutFormComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private workoutService: WorkoutService,
     private userService: UserService,
     private formBuilder: FormBuilder,
     private route: ActivatedRoute
@@ -63,7 +62,7 @@ export class WorkoutFormComponent implements OnInit {
   }
 
   loadExistingWorkoutForm(workoutId: number) {
-    this.workoutService.getWorkoutById(workoutId).subscribe((workout) => {
+    this.userService.getWorkoutById(workoutId).subscribe((workout) => {
       console.log('Received workout:', workout);
       this.workoutFormGroup = this.formBuilder.group({
         name: new FormControl(workout.name, [
@@ -116,7 +115,6 @@ export class WorkoutFormComponent implements OnInit {
         if (res.status === 201) {
           this.router.navigate(['/exercise'], {
             queryParams: {
-              // store the workout id
               workoutId: res.id,
               workoutSuccessMessage: res.message,
             },

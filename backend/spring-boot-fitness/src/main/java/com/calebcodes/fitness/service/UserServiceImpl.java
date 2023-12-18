@@ -22,6 +22,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -72,14 +73,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<UserResponse> updateUser(UserDto userDto) {
-        User user = UserMapper.toUser(userDto);
-        if (user.getId() == null) {
-            throw new UserNotFoundException("User with id: " + user.getId() + "does not exist");
-        }
-        User userToReturn = this.userRepository.save(user);
-        return new ResponseEntity<UserResponse>(UserMapper.toUserResponse(userToReturn, 201,
-                "User with id: " + userToReturn.getId() + "successfully updated"), HttpStatus.CREATED);
+    public ResponseEntity<String> updateUserAvatar(Long id, MultipartFile file) {
+        User user = this.getUserByIdOrThrow(id);
+
+        System.out.println(file);
+
+//        User userToReturn = this.userRepository.save(user);
+//        return new ResponseEntity<UserResponse>(UserMapper.toUserResponse(userToReturn, 201,
+//                "User with id: " + userToReturn.getId() + " avatar upload success"), HttpStatus.CREATED);
+        return ResponseEntity.ok("File uploaded successfully");
     }
 
     @Override

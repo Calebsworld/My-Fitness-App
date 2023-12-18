@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { Exercise } from 'src/app/common/Exercise';
 import { ExerciseService } from 'src/app/services/exercise.service';
@@ -15,8 +15,7 @@ workoutId?: number
 exercise$?:Observable<Exercise>;
 
 constructor(public route:ActivatedRoute, 
-            private exerciseService:ExerciseService,
-            private router:Router) { }
+            private exerciseService:ExerciseService) { }
 
 
   ngOnInit(): void {

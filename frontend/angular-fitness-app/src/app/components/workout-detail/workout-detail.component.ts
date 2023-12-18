@@ -1,11 +1,10 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import { Exercise } from 'src/app/common/Exercise';
 import { WorkingSet } from 'src/app/common/WorkingSet';
 import { Workout } from 'src/app/common/Workout';
 import { UserService } from 'src/app/services/user.service';
-import { WorkoutService } from 'src/app/services/workout.service';
 
 @Component({
   selector: 'app-workout-detail',
@@ -22,8 +21,7 @@ export class WorkoutDetailComponent implements OnInit, OnDestroy {
 
   #unsubscribe$ = new Subject<void>()
 
-  constructor(private workoutService:WorkoutService,
-              private userService:UserService, 
+  constructor(private userService:UserService, 
               private route:ActivatedRoute, 
               private router:Router) {}
 
@@ -52,7 +50,7 @@ export class WorkoutDetailComponent implements OnInit, OnDestroy {
       this.showExercises()
   }
 
-  showExercises() {
+  showExercises(): void {
     this.exercises$ = this.userService.getExercises(this.workoutId!)
   }
 
@@ -64,7 +62,6 @@ export class WorkoutDetailComponent implements OnInit, OnDestroy {
       ).subscribe(
         res => {
           if (res.status === 200) {
-            console.log(res)
             this.exerciseDeleteMessage = res.message
             this.showDeleteMessage()
             this.showExercises()
@@ -90,7 +87,6 @@ export class WorkoutDetailComponent implements OnInit, OnDestroy {
     }
   }
 
-
   addExercise(workout:Workout) {
     this.router.navigate([`/exercise/workout/${workout.id}`])
   }
@@ -98,7 +94,6 @@ export class WorkoutDetailComponent implements OnInit, OnDestroy {
   editExercise(workoutId:number, exerciseId:number) {
     this.router.navigate(['/workout', workoutId, 'exercises', exerciseId]);
 }
-
 
   groupedSets(exercise:Exercise): {set: WorkingSet, count:number}[] {
 

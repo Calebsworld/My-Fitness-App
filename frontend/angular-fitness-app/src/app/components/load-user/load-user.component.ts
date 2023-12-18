@@ -41,15 +41,14 @@ export class LoadUserComponent implements OnInit {
             },
 
             error: (error: any) => {
+              console.log(error)
               if (error instanceof HttpErrorResponse) {
-                console.log(error)
-                if (error.status === 404) {
-                    // User not found, navigate to the form route
-                this.router.navigate(['user-form']);
+                if (error.error.status === 404) {
+                  console.log(error.error.message)
+                  this.router.navigate(['user-form']);
                 }
               } else {
                 console.error('Other error occurred:' + error);
-                throwError(error.message);
               }
             },
 

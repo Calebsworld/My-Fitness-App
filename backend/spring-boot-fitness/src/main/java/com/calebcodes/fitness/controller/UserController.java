@@ -9,9 +9,13 @@ import com.calebcodes.fitness.response.UserResponse;
 import com.calebcodes.fitness.response.WorkoutResponse;
 import com.calebcodes.fitness.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Set;
 
 @RestController
@@ -41,9 +45,14 @@ public class UserController {
         return userService.addUser(userDto);
     }
 
-    @PutMapping()
-    public ResponseEntity<UserResponse> UpdateUser(@RequestBody UserDto userDto) {
-        return this.userService.updateUser(userDto);
+    @PostMapping("/{id}/avatar")
+    public ResponseEntity<String> UpdateUserAvatar(@PathVariable Long id,
+                                                         @RequestParam("file") MultipartFile file) throws IOException {
+        try {
+            return userService.updateUserAvatar(id, file);
+        } catch (IOException e) {
+            throw new IOException("Could not upload file: " + file.getOriginalFilename());
+        }
     }
 
     @DeleteMapping("/{id}")

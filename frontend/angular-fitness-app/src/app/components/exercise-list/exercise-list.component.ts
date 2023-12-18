@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Exercise } from 'src/app/common/Exercise';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ExerciseModalComponent } from '../exercise-modal/exercise-modal.component';
 import { WorkoutService } from 'src/app/services/workout.service';
@@ -21,9 +21,9 @@ export class ExerciseListComponent implements OnInit {
   public exerciseSuccessMessage?: string
   public exerciseErrorMessage?:string
 
-  constructor(private router:Router,
-              private modalService: NgbModal,
-              private workoutService:WorkoutService) { }
+  constructor(private workoutService:WorkoutService,
+              private router:Router,
+              private modalService: NgbModal) { }
 
   
   ngOnInit(): void {

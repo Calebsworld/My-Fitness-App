@@ -19,8 +19,8 @@ export class UserService  {
     email: '',
     avatar: ''
   }
-  
   private userWorkoutUrl?: string 
+  private userUrl?: string;
 
   constructor(private httpClient:HttpClient,
               private router:Router) { }
@@ -33,14 +33,12 @@ export class UserService  {
     return undefined
   }
 
+  
+
   setUser(user: User): void {
     localStorage.setItem('user', JSON.stringify(user))
     localStorage.setItem('isUserSet', JSON.stringify(true))
     this.constructUserWorkoutUrl()
-  }
-
-  removeDefaultUser(): void {
-    localStorage.removeItem('defaultUser')
   }
 
   clearUser() {
@@ -62,6 +60,10 @@ export class UserService  {
       localStorage.setItem('defaultUser', JSON.stringify(this.defaultUser))
   }
 
+  removeDefaultUser(): void {
+    localStorage.removeItem('defaultUser')
+  }
+
   // Retrieve the user by email address from auth0 service, use Hibernate built in method, if not exists then route to user-form component.
   GetUserByEmail(email:string): Observable<UserResponse> {
     return this.httpClient.get<UserResponse>(`${environment.newBaseUrl}/${email}`)
@@ -75,8 +77,12 @@ export class UserService  {
     return this.httpClient.post<UserResponse>(`${environment.newBaseUrl}`, userDto)
   }
 
-  updateUser(user: User): Observable<UserResponse>  {
-    return this.httpClient.put<UserResponse>(`${environment.newBaseUrl}`, user)
+  updateUserAvatar(file: FormData): Observable<UserResponse>  {
+    const url = this.getUserUrl
+    if (!url) {
+      return throwError('UserWorkoutUrl is not available.');
+    }
+    return this.httpClient.put<UserResponse>(`${url}/avatar`, file)
   }
 
   deleteUser(id: number): Observable<UserResponse> {
@@ -235,7 +241,33 @@ export class UserService  {
 
     return this.userWorkoutUrl 
   }
+
+private constructUserUrl(): void {
+  const storedUser = this.getUser()
+   if (!storedUser) {
+     this.userWorkoutUrl = undefined
+   }
+   this.userUrl = `${environment.newBaseUrl}/${storedUser?.id}`
+ }
+
+ private getUserUrl(): string | undefined {
+   const storedUser = this.getUser()
+
+   if (storedUser?.id && !this.userUrl) {
+     this.constructUserWorkoutUrl()
+   }
+   return this.userWorkoutUrl 
+ }
+
+
+
+
+
+
+
+
 }
+
 
 interface WorkoutWrapperDto {
   workouts: Workout[],

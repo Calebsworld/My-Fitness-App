@@ -9,7 +9,9 @@ import com.calebcodes.fitness.response.UserResponse;
 import com.calebcodes.fitness.response.WorkoutResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Set;
 
 @Service
@@ -18,7 +20,8 @@ public interface UserService {
     public ResponseEntity<UserResponse> getUserByEmail(String email);
     public ResponseEntity<User> getUserById(Long id);
     public ResponseEntity<UserResponse> addUser(UserDto userDto);
-    ResponseEntity<UserResponse> updateUser(UserDto userDto);
+
+    ResponseEntity<String> updateUserAvatar(Long id, MultipartFile file) throws IOException;
     public ResponseEntity<UserResponse> deleteUser(Long id);
     public WorkoutWrapperDto getUserWorkouts(Long id, int page, int size);
     public ResponseEntity<Workout> getWorkout(Long id, Long workoutId);
