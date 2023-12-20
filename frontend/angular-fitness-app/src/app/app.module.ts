@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule } from '@angular/common/http'
-import { environment } from 'src/environments/environment.development';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http'
+import { environment } from '../environments/environment.development';
 
 
 import { AppRoutingModule } from './app-routing.module';
@@ -26,7 +26,7 @@ import { ExercisePaginationComponent } from './components/exercise-pagination/ex
 import { ExerciseModalComponent } from './components/exercise-modal/exercise-modal.component';
 import { WorkoutPaginationComponent } from './components/workout-pagination/workout-pagination.component';
 import { CurrentWorkoutDetailsComponent } from './components/current-workout-details/current-workout-details.component';
-import { AuthModule, AuthConfig, AuthGuard } from '@auth0/auth0-angular';
+import { AuthModule, AuthConfig, AuthGuard, AuthHttpInterceptor } from '@auth0/auth0-angular';
 import { LoginButtonComponent } from './components/login-button/login-button.component';
 import { SignupButtonComponent } from './components/signup-button/signup-button.component';
 import { CallbackComponent } from './components/callback/callback.component';
@@ -107,12 +107,20 @@ const routes: Routes = [
       // Configure cookies for token storage
       cacheLocation: 'localstorage', // or 'cookies'
       authorizationParams: {
+        audience: environment.auth0.audience,
         redirect_uri: window.location.origin,
+      },
+      httpInterceptor: {
+        allowedList: environment.allowedList
       },
     } as AuthConfig),
 
   ],
-  providers: [
+  providers: [  {
+    provide: HTTP_INTERCEPTORS,
+    useClass: AuthHttpInterceptor,
+    multi: true,
+},
     UserService,
     ExerciseService,
   ],

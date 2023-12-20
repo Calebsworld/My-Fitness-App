@@ -1,0 +1,11 @@
+<ng-container *ngIf="equipment$ | async as equipment">  
+  <label for="equipment" class="form-label fw-bold fs-5">Choose equipment:</label>
+  <select name="equipment" id="equipment" [(ngModel)]="selectedValue" (ngModelChange)="onChange()" class="form-select mb-3">
+    <option *ngIf="selectedValue.length === 0" value="" selected disabled>Select Equipment</option>
+    <option *ngFor="let tempEquipment of equipment" [value]="tempEquipment" class="ms-2">
+      {{ tempEquipment }}
+    </option>
+  </select>
+  <button *ngIf="selectedValue.length > 0" class="btn btn-danger" (click)="reset()">Reset</button>
+</ng-container>
+  

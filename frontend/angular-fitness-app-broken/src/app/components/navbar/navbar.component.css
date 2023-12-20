@@ -1,0 +1,21 @@
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+}
+
+.navbar-brand {
+  font-weight: bold;
+}
+
+.navbar-nav .nav-link {
+  color: #fff;
+  margin-right: 10px;
+}
+
+.navbar-nav .nav-link:hover,
+.navbar-nav a.active {
+  color: rgb(158, 157, 157)
+}

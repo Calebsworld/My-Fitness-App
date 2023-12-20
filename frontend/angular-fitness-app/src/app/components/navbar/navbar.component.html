@@ -11,7 +11,7 @@
         <a class="nav-link" routerLink="/exercise" routerLinkActive="active">Exercises</a>
         <a class="nav-link" routerLink="/workout" routerLinkActive="active">Workouts</a>
         <ng-container *ngIf="isAuthenticated$ | async; else unAuthenticated">
-          <app-avatar-logout/>
+          <app-avatar-logout *ngIf="isUserSet$ | async" />
         </ng-container>
         <ng-template #unAuthenticated>
           <div class="d-flex align-items-center position-absolute top-0 end-0 m-2 my-3">

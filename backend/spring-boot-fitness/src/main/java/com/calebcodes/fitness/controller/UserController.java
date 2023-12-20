@@ -20,7 +20,7 @@ import java.util.Set;
 
 @RestController
 @CrossOrigin("http://localhost:4200")
-@RequestMapping(value = "/api/users", produces = "application/json")
+@RequestMapping(value = "/api", produces = "application/json")
 public class UserController {
 
     private final UserService userService;
@@ -30,22 +30,23 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("user/{id}")
+    @GetMapping("/public/users/user/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
         return this.userService.getUserById(id);
     }
 
-    @GetMapping("/{email}")
+    @GetMapping("/public/{email}")
     public ResponseEntity<UserResponse> getUserByEmail(@PathVariable String email) {
         return this.userService.getUserByEmail(email);
     }
 
-    @PostMapping()
+    @PostMapping("/public/users")
     public ResponseEntity<UserResponse> addUser(@RequestBody UserDto userDto) {
         return userService.addUser(userDto);
     }
 
-    @PostMapping("/{id}/avatar")
+    @PostMapping("/private/users/{id}/avatar")
+//    @PreAuthorize("hasAuthority('upload:avatar')")
     public ResponseEntity<String> UpdateUserAvatar(@PathVariable Long id,
                                                          @RequestParam("file") MultipartFile file) throws IOException {
         try {
@@ -55,12 +56,13 @@ public class UserController {
         }
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/private/users/{id}")
+//    @PreAuthorize("hasAuthority('delete:user')")
     public ResponseEntity<UserResponse> deleteUser(@PathVariable Long id) {
         return this.userService.deleteUser(id);
     }
 
-    @GetMapping("/{id}/workouts")
+    @GetMapping("/private/users/{id}/workouts")
     public WorkoutWrapperDto getUserWorkouts(
             @PathVariable Long id,
             @RequestParam(defaultValue = "0") int page,
@@ -68,21 +70,21 @@ public class UserController {
         return userService.getUserWorkouts(id, page, size);
     }
 
-    @GetMapping("/{id}/workouts/{workoutId}")
+    @GetMapping("/private/users/{id}/workouts/{workoutId}")
     public ResponseEntity<Workout> getWorkout(
             @PathVariable Long id,
             @PathVariable Long workoutId) {
         return userService.getWorkout(id, workoutId);
     }
 
-    @GetMapping("/{id}/workouts/{workoutId}/exercises")
+    @GetMapping("/private/users/{id}/workouts/{workoutId}/exercises")
     public ResponseEntity<Set<Exercise>> getExercises(
             @PathVariable Long id,
             @PathVariable Long workoutId) {
         return userService.getExercises(id, workoutId);
     }
 
-    @GetMapping("/{id}/workouts/{workoutId}/exercises/{exerciseId}")
+    @GetMapping("/private/users/{id}/workouts/{workoutId}/exercises/{exerciseId}")
     public ResponseEntity<Exercise> getExercise(
             @PathVariable Long id,
             @PathVariable Long workoutId,
@@ -90,14 +92,14 @@ public class UserController {
         return userService.getExercise(id, exerciseId);
     }
 
-    @PostMapping("/{id}/workouts")
+    @PostMapping("/private/users/{id}/workouts")
     public ResponseEntity<WorkoutResponse> addOrUpdateWorkout(
             @PathVariable Long id,
             @RequestBody Workout workout) {
         return userService.addOrUpdateWorkout(id, workout);
     }
 
-    @PostMapping("/{id}/workouts/{workoutId}/exercises")
+    @PostMapping("/private/users/{id}/workouts/{workoutId}/exercises")
     public ResponseEntity<ExerciseResponse> addExercise(
             @PathVariable Long id,
             @PathVariable Long workoutId,
@@ -105,7 +107,7 @@ public class UserController {
         return userService.addExercise(id, workoutId, exerciseDto);
     }
 
-    @DeleteMapping("/{id}/workouts/{workoutId}/exercises/{exerciseId}")
+    @DeleteMapping("/private/users/{id}/workouts/{workoutId}/exercises/{exerciseId}")
     public ResponseEntity<ExerciseResponse> removeExercise(
             @PathVariable Long id,
             @PathVariable Long workoutId,
@@ -113,7 +115,7 @@ public class UserController {
         return userService.removeExercise(id, workoutId, exerciseId);
     }
 
-    @DeleteMapping("/{id}/workouts/{workoutId}")
+    @DeleteMapping("/private/users/{id}/workouts/{workoutId}")
     public ResponseEntity<WorkoutResponse> deleteWorkout(
             @PathVariable Long id,
             @PathVariable Long workoutId) {

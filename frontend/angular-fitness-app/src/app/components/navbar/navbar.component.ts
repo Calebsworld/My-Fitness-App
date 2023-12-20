@@ -15,12 +15,13 @@ export class NavbarComponent implements OnInit {
   isAuthenticated$!: Observable<any>
   isUserSet$!: Observable<boolean>
 
-
   constructor( private authService: AuthService, @Inject(DOCUMENT) private doc: Document, private userService:UserService) {}
   
   ngOnInit(): void {
     this.isAuthenticated$ = this.authService.isAuthenticated$
+    this.isUserSet$ = this.userService.isUserSet$
   }
+
 
   handleLogout(): void {
     this.authService.logout({

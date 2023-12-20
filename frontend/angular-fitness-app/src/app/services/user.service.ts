@@ -1,5 +1,5 @@
 import { Injectable} from '@angular/core';
-import { Observable, catchError, retry, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, of, retry, throwError } from 'rxjs';
 import { Exercise } from '../common/Exercise';
 import { WorkingSet } from '../common/WorkingSet';
 import { Workout } from '../common/Workout';
@@ -8,6 +8,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment.development';
 import { User } from '../common/User';
 import { UserDto } from '../common/UserDto';
+import { JsonPipe } from '@angular/common';
 
 
 @Injectable({
@@ -21,6 +22,7 @@ export class UserService  {
   }
   private userWorkoutUrl?: string 
   private userUrl?: string;
+  public isUserSet$ = new BehaviorSubject(false) 
 
   constructor(private httpClient:HttpClient,
               private router:Router) { }
@@ -33,12 +35,17 @@ export class UserService  {
     return undefined
   }
 
-  
-
   setUser(user: User): void {
     localStorage.setItem('user', JSON.stringify(user))
     localStorage.setItem('isUserSet', JSON.stringify(true))
+    this.isUserSet$.next(true)
     this.constructUserWorkoutUrl()
+  }
+
+  getIsUserSet(): boolean {
+    const isUserSetJson = localStorage.getItem('isUserSet')
+    const isUserSet: boolean = isUserSetJson != undefined ? JSON.parse(isUserSetJson) : false
+    return isUserSet
   }
 
   clearUser() {
@@ -66,11 +73,11 @@ export class UserService  {
 
   // Retrieve the user by email address from auth0 service, use Hibernate built in method, if not exists then route to user-form component.
   GetUserByEmail(email:string): Observable<UserResponse> {
-    return this.httpClient.get<UserResponse>(`${environment.newBaseUrl}/${email}`)
+    return this.httpClient.get<UserResponse>(`${environment.newBaseUrl}/public/${email}`)
   } 
 
   GetUserById(id: number): Observable<User> {
-    return this.httpClient.get<User>(`${environment.newBaseUrl}/user/${id}`)
+    return this.httpClient.get<User>(`${environment.newBaseUrl}/public/user/${id}`)
   }
 
   addUser(userDto: UserDto): Observable<UserResponse>  {
@@ -78,7 +85,7 @@ export class UserService  {
   }
 
   updateUserAvatar(file: FormData): Observable<UserResponse>  {
-    const url = this.getUserUrl
+    const url = this.getUserUrl()
     if (!url) {
       return throwError('UserWorkoutUrl is not available.');
     }
@@ -229,7 +236,7 @@ export class UserService  {
       this.userWorkoutUrl = undefined
     }
     console.log(storedUser)
-    this.userWorkoutUrl = `${environment.newBaseUrl}/${storedUser?.id}/workouts`
+    this.userWorkoutUrl = `${environment.newBaseUrl}/private/users/${storedUser?.id}/workouts`
   }
 
   private getUserWorkoutUrl(): string | undefined {
@@ -247,7 +254,7 @@ private constructUserUrl(): void {
    if (!storedUser) {
      this.userWorkoutUrl = undefined
    }
-   this.userUrl = `${environment.newBaseUrl}/${storedUser?.id}`
+   this.userUrl = `${environment.newBaseUrl}/private/users/${storedUser?.id}`
  }
 
  private getUserUrl(): string | undefined {
