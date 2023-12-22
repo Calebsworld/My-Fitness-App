@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,7 +20,7 @@ import java.io.IOException;
 import java.util.Set;
 
 @RestController
-@CrossOrigin("http://localhost:4200")
+//@CrossOrigin("http://localhost:4200")
 @RequestMapping(value = "/api", produces = "application/json")
 public class UserController {
 
@@ -46,7 +47,7 @@ public class UserController {
     }
 
     @PostMapping("/private/users/{id}/avatar")
-//    @PreAuthorize("hasAuthority('upload:avatar')")
+    @PreAuthorize("hasAuthority('upload:avatar')")
     public ResponseEntity<String> UpdateUserAvatar(@PathVariable Long id,
                                                          @RequestParam("file") MultipartFile file) throws IOException {
         try {
@@ -57,12 +58,13 @@ public class UserController {
     }
 
     @DeleteMapping("/private/users/{id}")
-//    @PreAuthorize("hasAuthority('delete:user')")
+    @PreAuthorize("hasAuthority('delete:user')")
     public ResponseEntity<UserResponse> deleteUser(@PathVariable Long id) {
         return this.userService.deleteUser(id);
     }
 
     @GetMapping("/private/users/{id}/workouts")
+    @PreAuthorize("hasAuthority('read:workouts')")
     public WorkoutWrapperDto getUserWorkouts(
             @PathVariable Long id,
             @RequestParam(defaultValue = "0") int page,
@@ -71,6 +73,7 @@ public class UserController {
     }
 
     @GetMapping("/private/users/{id}/workouts/{workoutId}")
+    @PreAuthorize("hasAuthority('read:workouts')")
     public ResponseEntity<Workout> getWorkout(
             @PathVariable Long id,
             @PathVariable Long workoutId) {
@@ -78,6 +81,7 @@ public class UserController {
     }
 
     @GetMapping("/private/users/{id}/workouts/{workoutId}/exercises")
+    @PreAuthorize("hasAuthority('read:exercises')")
     public ResponseEntity<Set<Exercise>> getExercises(
             @PathVariable Long id,
             @PathVariable Long workoutId) {
@@ -85,6 +89,7 @@ public class UserController {
     }
 
     @GetMapping("/private/users/{id}/workouts/{workoutId}/exercises/{exerciseId}")
+    @PreAuthorize("hasAuthority('read:exercises')")
     public ResponseEntity<Exercise> getExercise(
             @PathVariable Long id,
             @PathVariable Long workoutId,
@@ -93,6 +98,7 @@ public class UserController {
     }
 
     @PostMapping("/private/users/{id}/workouts")
+    @PreAuthorize("hasAuthority('add/update:workouts')")
     public ResponseEntity<WorkoutResponse> addOrUpdateWorkout(
             @PathVariable Long id,
             @RequestBody Workout workout) {
@@ -100,6 +106,7 @@ public class UserController {
     }
 
     @PostMapping("/private/users/{id}/workouts/{workoutId}/exercises")
+    @PreAuthorize("hasAuthority('create:exercises')")
     public ResponseEntity<ExerciseResponse> addExercise(
             @PathVariable Long id,
             @PathVariable Long workoutId,
@@ -108,6 +115,7 @@ public class UserController {
     }
 
     @DeleteMapping("/private/users/{id}/workouts/{workoutId}/exercises/{exerciseId}")
+    @PreAuthorize("hasAuthority('delete:exercises')")
     public ResponseEntity<ExerciseResponse> removeExercise(
             @PathVariable Long id,
             @PathVariable Long workoutId,
@@ -116,6 +124,7 @@ public class UserController {
     }
 
     @DeleteMapping("/private/users/{id}/workouts/{workoutId}")
+    @PreAuthorize("hasAuthority('delete:workouts')")
     public ResponseEntity<WorkoutResponse> deleteWorkout(
             @PathVariable Long id,
             @PathVariable Long workoutId) {

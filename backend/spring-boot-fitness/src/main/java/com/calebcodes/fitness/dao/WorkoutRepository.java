@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.Optional;
 
-@CrossOrigin("http://localhost:4200")
+//@CrossOrigin("http://localhost:4200")
 @Repository
 public interface WorkoutRepository extends JpaRepository<Workout, Long> {
     Optional<Workout> findByName(String name);

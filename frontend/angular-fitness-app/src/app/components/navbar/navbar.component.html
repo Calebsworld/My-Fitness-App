@@ -10,9 +10,9 @@
         <a class="nav-link" aria-current="page" routerLink="/profile" routerLinkActive="active">Profile</a>
         <a class="nav-link" routerLink="/exercise" routerLinkActive="active">Exercises</a>
         <a class="nav-link" routerLink="/workout" routerLinkActive="active">Workouts</a>
-        <!-- <a (click)="handleLogout()" class="nav-link text-light d-flex align-items-center" style="cursor: pointer;">
+        <a (click)="handleLogout()" class="nav-link text-light d-flex align-items-center" style="cursor: pointer;">
           <i class="fa-solid fa-user text-light"></i>Log out
-        </a> -->
+        </a>
        
         <ng-container *ngIf="isAuthenticated$ | async; else unAuthenticated">
           <app-avatar-logout *ngIf="isUserSet$ | async" />
