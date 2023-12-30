@@ -5,6 +5,7 @@ import com.calebcodes.fitness.entity.Exercise;
 import com.calebcodes.fitness.entity.User;
 import com.calebcodes.fitness.entity.Workout;
 import com.calebcodes.fitness.response.ExerciseResponse;
+import com.calebcodes.fitness.response.FileUploadResponse;
 import com.calebcodes.fitness.response.UserResponse;
 import com.calebcodes.fitness.response.WorkoutResponse;
 import com.calebcodes.fitness.service.UserService;
@@ -20,8 +21,7 @@ import java.io.IOException;
 import java.util.Set;
 
 @RestController
-//@CrossOrigin("http://localhost:4200")
-@RequestMapping(value = "/api", produces = "application/json")
+@RequestMapping(value = "/api")
 public class UserController {
 
     private final UserService userService;
@@ -46,15 +46,11 @@ public class UserController {
         return userService.addUser(userDto);
     }
 
-    @PostMapping("/private/users/{id}/avatar")
+    @PutMapping("/private/users/{id}/avatar")
     @PreAuthorize("hasAuthority('upload:avatar')")
-    public ResponseEntity<String> UpdateUserAvatar(@PathVariable Long id,
-                                                         @RequestParam("file") MultipartFile file) throws IOException {
-        try {
-            return userService.updateUserAvatar(id, file);
-        } catch (IOException e) {
-            throw new IOException("Could not upload file: " + file.getOriginalFilename());
-        }
+    public ResponseEntity<FileUploadResponse> UpdateUserAvatar(@PathVariable Long id,
+                                                               @RequestParam("file") MultipartFile file) throws IOException {
+        return userService.updateUserAvatar(id, file);
     }
 
     @DeleteMapping("/private/users/{id}")
@@ -130,6 +126,8 @@ public class UserController {
             @PathVariable Long workoutId) {
         return userService.deleteWorkout(id, workoutId);
     }
+
+
 
 
 }

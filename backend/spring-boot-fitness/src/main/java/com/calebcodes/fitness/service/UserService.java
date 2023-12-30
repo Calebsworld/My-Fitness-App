@@ -5,6 +5,7 @@ import com.calebcodes.fitness.entity.Exercise;
 import com.calebcodes.fitness.entity.User;
 import com.calebcodes.fitness.entity.Workout;
 import com.calebcodes.fitness.response.ExerciseResponse;
+import com.calebcodes.fitness.response.FileUploadResponse;
 import com.calebcodes.fitness.response.UserResponse;
 import com.calebcodes.fitness.response.WorkoutResponse;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ public interface UserService {
     public ResponseEntity<User> getUserById(Long id);
     public ResponseEntity<UserResponse> addUser(UserDto userDto);
 
-    ResponseEntity<String> updateUserAvatar(Long id, MultipartFile file) throws IOException;
+    ResponseEntity<FileUploadResponse> updateUserAvatar(Long id, MultipartFile file) throws IOException;
     public ResponseEntity<UserResponse> deleteUser(Long id);
     public WorkoutWrapperDto getUserWorkouts(Long id, int page, int size);
     public ResponseEntity<Workout> getWorkout(Long id, Long workoutId);

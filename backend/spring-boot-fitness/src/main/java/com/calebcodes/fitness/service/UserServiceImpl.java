@@ -12,8 +12,10 @@ import com.calebcodes.fitness.entity.WorkingSet;
 import com.calebcodes.fitness.entity.Workout;
 import com.calebcodes.fitness.exception.*;
 import com.calebcodes.fitness.response.ExerciseResponse;
+import com.calebcodes.fitness.response.FileUploadResponse;
 import com.calebcodes.fitness.response.UserResponse;
 import com.calebcodes.fitness.response.WorkoutResponse;
+import com.calebcodes.fitness.utils.FileUploader;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,13 +24,16 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import static com.calebcodes.fitness.utils.FileValidationUtils.*;
+
 
 @Service
 @Transactional
@@ -38,13 +43,19 @@ public class UserServiceImpl implements UserService {
     private final WorkoutRepository workoutRepository;
     private final WorkingSetRepository workingSetRepository;
     private final EntityManager entityManager;
+    private final FileUploader fileUploader;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, WorkoutRepository workoutRepository, WorkingSetRepository workingSetRepository, EntityManager entityManager) {
+    public UserServiceImpl(UserRepository userRepository,
+                           WorkoutRepository workoutRepository,
+                           WorkingSetRepository workingSetRepository,
+                           EntityManager entityManager,
+                           FileUploader fileUploader) {
         this.userRepository = userRepository;
         this.workoutRepository = workoutRepository;
         this.workingSetRepository = workingSetRepository;
         this.entityManager = entityManager;
+        this.fileUploader = fileUploader;
     }
 
     @Override
@@ -73,15 +84,24 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<String> updateUserAvatar(Long id, MultipartFile file) {
+    public ResponseEntity<FileUploadResponse> updateUserAvatar(Long id, MultipartFile file) throws IOException {
+
         User user = this.getUserByIdOrThrow(id);
-
-        System.out.println(file);
-
-//        User userToReturn = this.userRepository.save(user);
-//        return new ResponseEntity<UserResponse>(UserMapper.toUserResponse(userToReturn, 201,
-//                "User with id: " + userToReturn.getId() + " avatar upload success"), HttpStatus.CREATED);
-        return ResponseEntity.ok("File uploaded successfully");
+        validateFileSizeAndType(file);
+        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+        validateFileName(fileName);
+        String sanitizedFileName = sanitizeFileName(fileName);
+        System.out.println("Sanitized file name: " + sanitizedFileName);
+        String fileUrl = "";
+        if (!sanitizedFileName.isEmpty() && sanitizedFileName != null) {
+            fileUploader.saveFile(file, sanitizedFileName);
+            fileUrl = fileUploader.getFileUrl(sanitizedFileName);
+            user.setAvatar(fileUrl);
+        } else {
+            System.out.println("File name is empty or not a String:" + fileName);
+        }
+        this.userRepository.save(user);
+        return new ResponseEntity<>(new FileUploadResponse(sanitizedFileName, fileUrl, file.getContentType(), file.getSize()), HttpStatus.CREATED);
     }
 
     @Override
