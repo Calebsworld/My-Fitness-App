@@ -13,13 +13,12 @@ export class LogoutButtonComponent {
     private auth: AuthService,
     @Inject(DOCUMENT) private doc: Document
   ) {}
-
+  
   handleLogout(): void {
     this.auth.logout({
       logoutParams: {
         returnTo: this.doc.location.origin,
       },
     });
-    this.userService.clearUser()
   }
 }

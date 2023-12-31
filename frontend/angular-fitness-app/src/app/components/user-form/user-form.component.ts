@@ -44,7 +44,7 @@ export class UserFormComponent implements OnInit, OnDestroy {
       next: ((userResponse) => {
         if (userResponse.status === 201) {
           this.userService.setUser(userResponse.user);
-          this.userService.removeDefaultUser()
+          localStorage.removeItem('defaultUser')
           this.router.navigate(['exercise']);
         }
       }),

@@ -61,6 +61,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<UserResponse> getUserByEmail(String email) {
         Optional<User> user = this.userRepository.findByEmail(email);
+        if (user.isEmpty()) {
+            throw new UserNotFoundException("User with email: " + email + " not found");
+        }
         return new ResponseEntity<>(UserMapper.toUserResponse(user.get(), 200,
                 "User with email: " + email + " successfully retrieved"), HttpStatus.OK);
     }

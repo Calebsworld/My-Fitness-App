@@ -11,9 +11,8 @@ import { Observable, of } from 'rxjs';
   styleUrls: ['./profile.component.css']
 })
 export class ProfileComponent implements OnInit {
-  user$!: Observable<User>
+  user$!: Observable<User | null>
   filePath?: string 
-  storedUser?: User 
 
   @ViewChild('avatarInput') avatarInputRef!: ElementRef;
 
@@ -23,14 +22,10 @@ export class ProfileComponent implements OnInit {
 
   ngOnInit(): void {
     this.showUserProfile()
-
   }
 
   showUserProfile() {
-    this.storedUser = this.userService.getUser()
-    if (this.storedUser) {
-      this.user$ = of(this.storedUser)
-    }
+    this.user$ = this.userService.user$
   }
 
   uploadFileToServer(file:File): void {
@@ -41,8 +36,6 @@ export class ProfileComponent implements OnInit {
           if (userResponse.status === 201) {
             console.log(userResponse.user)
             this.userService.setUser(userResponse.user)
-            this.storedUser = this.userService.getUser()
-            this.user$ = of(this.storedUser!)
           }
           //this.loadUser()
         },
@@ -60,22 +53,5 @@ export class ProfileComponent implements OnInit {
       this.uploadFileToServer(files[0])
     }
   }
-
-  private loadUser() {
-      this.userService.GetUserByEmail(this.storedUser!.email!).subscribe({
-        next: ((userResponse) => {
-          if (userResponse.status === 200) {
-            console.log(userResponse.user)
-            this.userService.setUser(userResponse.user)
-            this.storedUser = this.userService.getUser()
-            this.user$ = of(this.storedUser!)
-          }
-        }),
-        error: ((error) => {
-          console.log(error)
-        }),
-      })
-  }
-
 
 }

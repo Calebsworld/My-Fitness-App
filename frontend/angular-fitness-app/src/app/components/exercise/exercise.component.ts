@@ -17,11 +17,10 @@ export class ExerciseComponent implements OnInit {
 
   public exercises:Exercise[] = []
   public dataReceived$ = new BehaviorSubject(false)
-  public isUserSet$!: Observable<boolean> 
+  public isUserSet$ = this.userService.isUserSet$ 
 
   private pages:Exercise[][] = []
   private completeExerciseList:Exercise[] = []
-  private filteredExerciseList:Exercise[] = []
   private previousData: Exercise[] = []
 
   public workoutId?:number
@@ -62,15 +61,18 @@ export class ExerciseComponent implements OnInit {
               }
 
   ngOnInit(): void {
+    this.isAuthenticated$ = this.authService.isAuthenticated$
+    let isAuthenticated = false
+    this.isAuthenticated$.subscribe(data => isAuthenticated = data)
     const storedUser = this.userService.getUser()
-    if (!storedUser) {
-      this.isUserSet$ = of(false)
+    if (!storedUser && !isAuthenticated) {
+      this.isUserSet$.next(false)
+    } else if (!storedUser) {
       this.router.navigate(['user-form'])
     } else {
-      this.isUserSet$ = of(true)
+      this.isUserSet$.next(true)
     }
-
-    this.isAuthenticated$ = this.authService.isAuthenticated$
+    
     this.route.paramMap.subscribe(  
       params => {
         if (params.has('workoutId')) {

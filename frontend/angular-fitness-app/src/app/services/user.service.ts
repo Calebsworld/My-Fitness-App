@@ -1,5 +1,5 @@
 import { Injectable} from '@angular/core';
-import { BehaviorSubject, Observable, catchError, of, retry, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, ReplaySubject, Subject, catchError, of, retry, throwError } from 'rxjs';
 import { Exercise } from '../common/Exercise';
 import { WorkingSet } from '../common/WorkingSet';
 import { Workout } from '../common/Workout';
@@ -21,36 +21,44 @@ export class UserService  {
   }
   private userWorkoutUrl?: string 
   private userUrl?: string;
-  public isUserSet$ = new BehaviorSubject(false) 
+
+  private userSource = new BehaviorSubject<User | null>(this.getUserFromLocalStorage());
+  user$ = this.userSource.asObservable();
+  public isUserSet$ = new ReplaySubject<boolean>(1) 
+
 
   constructor(private httpClient:HttpClient,
               private router:Router) { }
 
-  getUser(): User | undefined {
-    const userJson = localStorage.getItem('user')
-    if (!userJson) {
-      return undefined      
+              
+  getUser(): User | null {
+    const currentUser = this.userSource.value
+    if (!currentUser) {
+      const userFromStorage = this.getUserFromLocalStorage()
+      if (userFromStorage) {
+        this.userSource.next(userFromStorage)
+      }
+      return userFromStorage
     }
-    return JSON.parse(userJson)
+    return currentUser
   }
 
   setUser(user: User): void {
+    this.userSource.next(user);
     localStorage.setItem('user', JSON.stringify(user))
-    localStorage.setItem('isUserSet', JSON.stringify(true))
-    this.isUserSet$.next(true)
+    this.isUserSet$.next(true);
     this.constructUserUrl()
     this.constructUserWorkoutUrl()
   }
-  
-  getIsUserSet(): boolean {
-    const isUserSetJson = localStorage.getItem('isUserSet')
-    const isUserSet: boolean = isUserSetJson != undefined ? JSON.parse(isUserSetJson) : false
-    return isUserSet
+
+  private getUserFromLocalStorage(): User | null {
+    const userJson = localStorage.getItem('user');
+    return userJson ? JSON.parse(userJson) : null;
   }
 
   clearUser() {
     localStorage.removeItem('user')
-    localStorage.removeItem('isUserSet')
+    this.isUserSet$.next(false)
   }
 
   getDefaultUser(): DefaultUser | undefined {
@@ -67,10 +75,6 @@ export class UserService  {
       localStorage.setItem('defaultUser', JSON.stringify(this.defaultUser))
   }
 
-  removeDefaultUser(): void {
-    localStorage.removeItem('defaultUser')
-  }
-
   // Retrieve the user by email address from auth0 service, use Hibernate built in method, if not exists then route to user-form component.
   GetUserByEmail(email:string): Observable<UserResponse> {
     return this.httpClient.get<UserResponse>(`${environment.newBaseUrl}/public/${email}`)
@@ -81,7 +85,7 @@ export class UserService  {
   }
 
   addUser(userDto: UserDto): Observable<UserResponse>  {
-    return this.httpClient.post<UserResponse>(`${environment.newBaseUrl}`, userDto)
+    return this.httpClient.post<UserResponse>(`${environment.newBaseUrl}/public/users`, userDto)
   }
 
   updateUserAvatar(file: FormData): Observable<UserResponse>  {
