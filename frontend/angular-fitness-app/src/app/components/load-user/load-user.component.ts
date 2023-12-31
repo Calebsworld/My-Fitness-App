@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService, User } from '@auth0/auth0-angular';
-import { Subscription, map, throwError } from 'rxjs';
+import { Subscription, map, tap, throwError } from 'rxjs';
 import { UserService } from 'src/app/services/user.service';
 
 @Component({
@@ -21,8 +21,10 @@ export class LoadUserComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+
     this.subscription = this.authService.user$
       .pipe(
+        tap((auth0User) => console.log(auth0User)),
         map((auth0User) => {
           let defaultUser: DefaultUser = { email: auth0User?.email, avatar: auth0User?.picture };
           return defaultUser;
@@ -36,6 +38,7 @@ export class LoadUserComponent implements OnInit {
             next: (userResponse) => {
               if (userResponse.status === 200) {
                 this.userService.setUser(userResponse.user);
+                localStorage.removeItem('defaultUser')
                 this.router.navigate(['profile']);
               }
             },

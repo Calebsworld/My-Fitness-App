@@ -4,6 +4,9 @@
 src/environments/environment.development.ts
 src/environments/environment.ts
 
+# SSL 
+/ssl-localhost
+
 # Compiled output
 /dist
 /tmp

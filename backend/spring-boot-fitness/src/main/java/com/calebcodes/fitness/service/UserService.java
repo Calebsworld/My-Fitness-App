@@ -22,7 +22,7 @@ public interface UserService {
     public ResponseEntity<User> getUserById(Long id);
     public ResponseEntity<UserResponse> addUser(UserDto userDto);
 
-    ResponseEntity<FileUploadResponse> updateUserAvatar(Long id, MultipartFile file) throws IOException;
+    ResponseEntity<UserResponse> updateUserAvatar(Long id, MultipartFile file) throws IOException;
     public ResponseEntity<UserResponse> deleteUser(Long id);
     public WorkoutWrapperDto getUserWorkouts(Long id, int page, int size);
     public ResponseEntity<Workout> getWorkout(Long id, Long workoutId);

@@ -8,7 +8,6 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment.development';
 import { User } from '../common/User';
 import { UserDto } from '../common/UserDto';
-import { JsonPipe } from '@angular/common';
 
 
 @Injectable({
@@ -29,19 +28,20 @@ export class UserService  {
 
   getUser(): User | undefined {
     const userJson = localStorage.getItem('user')
-    if (userJson) {
-      return JSON.parse(userJson)
+    if (!userJson) {
+      return undefined      
     }
-    return undefined
+    return JSON.parse(userJson)
   }
 
   setUser(user: User): void {
     localStorage.setItem('user', JSON.stringify(user))
     localStorage.setItem('isUserSet', JSON.stringify(true))
     this.isUserSet$.next(true)
+    this.constructUserUrl()
     this.constructUserWorkoutUrl()
   }
-
+  
   getIsUserSet(): boolean {
     const isUserSetJson = localStorage.getItem('isUserSet')
     const isUserSet: boolean = isUserSetJson != undefined ? JSON.parse(isUserSetJson) : false
@@ -55,10 +55,10 @@ export class UserService  {
 
   getDefaultUser(): DefaultUser | undefined {
     const defaultUserJson = localStorage.getItem('defaultUser')
-    if (defaultUserJson) {
-      return JSON.parse(defaultUserJson)
+    if (!defaultUserJson) {
+      return undefined      
     }
-    return undefined
+    return JSON.parse(defaultUserJson)
   } 
 
   setDefaultUser(email:string, avatar:string): void {
@@ -235,7 +235,6 @@ export class UserService  {
     if (!storedUser) {
       this.userWorkoutUrl = undefined
     }
-    console.log(storedUser)
     this.userWorkoutUrl = `${environment.newBaseUrl}/private/users/${storedUser?.id}/workouts`
   }
 
@@ -245,14 +244,13 @@ export class UserService  {
     if (storedUser?.id && !this.userWorkoutUrl) {
       this.constructUserWorkoutUrl()
     }
-
     return this.userWorkoutUrl 
   }
 
 private constructUserUrl(): void {
   const storedUser = this.getUser()
    if (!storedUser) {
-     this.userWorkoutUrl = undefined
+     this.userUrl = undefined
    }
    this.userUrl = `${environment.newBaseUrl}/private/users/${storedUser?.id}`
  }
@@ -261,9 +259,9 @@ private constructUserUrl(): void {
    const storedUser = this.getUser()
 
    if (storedUser?.id && !this.userUrl) {
-     this.constructUserWorkoutUrl()
+     this.constructUserUrl()
    }
-   return this.userWorkoutUrl 
+   return this.userUrl 
  }
 
 
@@ -326,4 +324,11 @@ export interface ExerciseWrapperDto {
 export type DefaultUser = {
   email?: string,
   avatar?: string
+}
+
+export interface FileUploadResponse {
+  fileName: string,
+  fileDownLoadUri: string,
+  fileType: string,
+  size: number
 }

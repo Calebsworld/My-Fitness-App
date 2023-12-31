@@ -7,7 +7,7 @@
           <label for="avatarInput" class="btn btn-outline-secondary">
             <i class="fas fa-upload"></i> Change Avatar
           </label>
-          <input type="file" id="avatarInput" style="display: none" (change)="uploadAvatar()" [(ngModel)]="filePath">
+          <input type="file" id="avatarInput" #avatarInput style="display: none" (change)="uploadAvatar()">
           <div *ngIf="filePath" class="mt-2">
             <strong>Selected File:</strong> {{ filePath }}
           </div>

@@ -1,8 +1,9 @@
 import { DOCUMENT } from '@angular/common';
 import { Component, Inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService, User } from '@auth0/auth0-angular';
-import { Observable, map } from 'rxjs';
+import { AuthService } from '@auth0/auth0-angular';
+import { Observable, map, of } from 'rxjs';
+import { User } from 'src/app/common/User';
 import { UserService } from 'src/app/services/user.service';
 
 @Component({
@@ -13,14 +14,24 @@ import { UserService } from 'src/app/services/user.service';
 export class AvatarLogoutComponent {
  
   storedUser?: User;
-  picture$!: Observable<any>
+  user$!: Observable<User>
+  
 
   constructor(private authService: AuthService, private userService: UserService, private router: Router, @Inject(DOCUMENT) private doc: Document) {}
 
   ngOnInit(): void {
-    this.picture$ = this.authService.user$.pipe(
-      map((auth0User) => auth0User?.picture)
-    )
+    this.showUserAvatar()
+  }
+
+  showUserAvatar(): void {
+    this.storedUser = this.userService.getUser()
+    if (this.storedUser) {
+      this.user$ = of(this.storedUser)
+    }
+  }
+
+  routeToProfile(): void {
+    this.router.navigate(['profile'])
   }
 
   handleLogout(): void {

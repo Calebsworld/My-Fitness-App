@@ -11,6 +11,11 @@ export class LoginButtonComponent {
 
   constructor(private auth: AuthService) {}
 
+  initiateAuthProcess() {
+    //Make request to an endpoint that generates a random string.
+    // Subscribe, call handleLogin, and pass state object 
+  }
+
   handleLogin(): void {
     this.auth.loginWithRedirect({
       appState: {

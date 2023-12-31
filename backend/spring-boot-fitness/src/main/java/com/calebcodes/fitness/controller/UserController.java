@@ -48,7 +48,7 @@ public class UserController {
 
     @PutMapping("/private/users/{id}/avatar")
     @PreAuthorize("hasAuthority('upload:avatar')")
-    public ResponseEntity<FileUploadResponse> UpdateUserAvatar(@PathVariable Long id,
+    public ResponseEntity<UserResponse> UpdateUserAvatar(@PathVariable Long id,
                                                                @RequestParam("file") MultipartFile file) throws IOException {
         return userService.updateUserAvatar(id, file);
     }

@@ -84,7 +84,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<FileUploadResponse> updateUserAvatar(Long id, MultipartFile file) throws IOException {
+    public ResponseEntity<UserResponse> updateUserAvatar(Long id, MultipartFile file) throws IOException {
 
         User user = this.getUserByIdOrThrow(id);
         validateFileSizeAndType(file);
@@ -100,8 +100,8 @@ public class UserServiceImpl implements UserService {
         } else {
             System.out.println("File name is empty or not a String:" + fileName);
         }
-        this.userRepository.save(user);
-        return new ResponseEntity<>(new FileUploadResponse(sanitizedFileName, fileUrl, file.getContentType(), file.getSize()), HttpStatus.CREATED);
+        User userToReturn = this.userRepository.save(user);
+        return new ResponseEntity<>(new UserResponse(userToReturn, "File upload successful", 201), HttpStatus.CREATED);
     }
 
     @Override
