@@ -20,5 +20,6 @@ export class LogoutButtonComponent {
         returnTo: this.doc.location.origin,
       },
     });
+    this.userService.clearUserAndDefaultUser()
   }
 }

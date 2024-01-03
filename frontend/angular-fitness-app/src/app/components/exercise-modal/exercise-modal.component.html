@@ -11,29 +11,60 @@
             <h5>{{ exercise?.name }}</h5>
             <p>Target Muscle: {{ exercise?.target }}</p>
         </div>
-    
-        <!-- <button type="button" class="btn btn-primary btn-sm" (click)="addSet()">Add set</button>
-        <div formArrayName="sets" *ngFor="let set of sets.controls; index as i">
-            <div [formGroupName]="i">
-                <h3 class="mt-2">Set {{i+1}}</h3>
-                <label for="reps">Reps:</label>
-                <input type="text" class="form-control" formControlName="reps" />
-                <label for="weight">Weight:</label>
-                <input type="text" class="form-control" formControlName="weight" />
-                <button type="button" class="btn btn-danger btn-sm mt-1" [disabled]="sets.length === 1" (click)="removeCurrentSet(i)">Delete</button>
-            </div>
-        </div> -->
-        
 
          <div formArrayName="sets" *ngFor="let set of sets.controls; index as i">
             <div [formGroupName]="i">
                 <h3 class="mt-2">Set</h3>
                 <hr>
                 <label for="reps">Reps:</label>
-                <input type="text" class="form-control" formControlName="reps" />
+                <input type="number" min="0" class="form-control" formControlName="reps" />
+                <div *ngIf="isRepsInvalid(i)" class="text-danger p-1 m-1" >
+                    <ng-container *ngIf="hasError(i, 'reps', 'required')">
+                        <div>
+                          Reps is a required field
+                        </div>
+                      </ng-container>
+                      <ng-container *ngIf="!hasError(i, 'reps', 'required') && 
+                                            hasError(i, 'reps', 'min')">
+                        <div>
+                            Sets must have a minimum of 1 rep
+                        </div>
+                      </ng-container>
+                      
+                      <ng-container *ngIf="!hasError(i, 'reps', 'required') &&                    
+                                            !hasError(i, 'reps', 'min') &&
+                                            hasError(i, 'reps', 'max')">
+                        <div>
+                          Sets must have a maximun of 100 reps
+                        </div>
+                      </ng-container>
+                  </div>
                 <label for="weight">Weight:</label>
-                <input type="text" class="form-control" formControlName="weight" />
-                <button type="button" class="btn btn-primary btn-sm mt-2" (click)="addSet()">Add set</button>
+                <input type="number" min="0" class="form-control" formControlName="weight" />
+                <div *ngIf="isWeightInvalid(i)" class="text-danger p-1 m-1" >
+                    <ng-container *ngIf="hasError(i, 'weight', 'required')">
+                        <div>
+                        Weight is a required field
+                        </div>
+                    </ng-container>
+                    <ng-container *ngIf="!hasError(i, 'reps', 'required') && 
+                                            hasError(i, 'reps', 'min')">
+                        <div>
+                        Weight must be greater than 0 lbs
+                        </div>
+                    </ng-container>
+                    <ng-container *ngIf="!hasError(i, 'weight', 'required') && 
+                                            !hasError(i, 'reps', 'min') &&                   
+                                            hasError(i, 'weight', 'max')">
+                        <div>
+                        Weight must not exceed 1000 lbs
+                        </div>
+                    </ng-container>
+                </div>
+                <button type="button" 
+                        class="btn btn-primary btn-sm mt-2" 
+                        (click)="addSet()"
+                        [disabled]="isAddSetDisabled(i)">Add set</button>
             </div>
         </div>
          

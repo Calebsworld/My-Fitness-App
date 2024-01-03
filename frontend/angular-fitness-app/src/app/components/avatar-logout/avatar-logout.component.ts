@@ -37,7 +37,7 @@ export class AvatarLogoutComponent {
         returnTo: this.doc.location.origin,
       },
     });
-    this.userService.clearUser()
+    this.userService.clearUserAndDefaultUser()
   }
   
 }

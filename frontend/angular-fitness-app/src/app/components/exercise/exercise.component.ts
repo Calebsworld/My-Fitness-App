@@ -51,6 +51,7 @@ export class ExerciseComponent implements OnInit {
 
   #unsubscribe$ = new Subject<void>()
   isAuthenticated$!: Observable<boolean>;
+  isAuthenticated: boolean = false;
 
 
   constructor(private userService:UserService,
@@ -61,18 +62,18 @@ export class ExerciseComponent implements OnInit {
               }
 
   ngOnInit(): void {
-    this.isAuthenticated$ = this.authService.isAuthenticated$
-    let isAuthenticated = false
-    this.isAuthenticated$.subscribe(data => isAuthenticated = data)
     const storedUser = this.userService.getUser()
-    if (!storedUser && !isAuthenticated) {
+    const authUser = this.userService.getDefaultUser()
+
+    if (!authUser) {
       this.isUserSet$.next(false)
-    } else if (!storedUser) {
       this.router.navigate(['user-form'])
+    } else if (!storedUser) {
+      this.isUserSet$.next(false)
     } else {
-      this.isUserSet$.next(true)
+      this,this.isUserSet$.next(true)
     }
-    
+
     this.route.paramMap.subscribe(  
       params => {
         if (params.has('workoutId')) {

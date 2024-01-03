@@ -56,8 +56,8 @@ export class UserService  {
     return userJson ? JSON.parse(userJson) : null;
   }
 
-  clearUser() {
-    localStorage.removeItem('user')
+  clearUserAndDefaultUser() {
+    localStorage.clear()
     this.isUserSet$.next(false)
   }
 
@@ -253,7 +253,7 @@ export class UserService  {
 
 private constructUserUrl(): void {
   const storedUser = this.getUser()
-   if (!storedUser) {
+   if (storedUser === null) {
      this.userUrl = undefined
    }
    this.userUrl = `${environment.newBaseUrl}/private/users/${storedUser?.id}`

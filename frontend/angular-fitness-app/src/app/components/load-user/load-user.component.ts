@@ -1,9 +1,10 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Route, Router } from '@angular/router';
 import { AuthService, User } from '@auth0/auth0-angular';
+import { getValueInRange } from '@ng-bootstrap/ng-bootstrap/util/util';
 import { ReplaySubject, Subscription, map, switchMap, tap, throwError } from 'rxjs';
-import { UserService } from 'src/app/services/user.service';
+import { UserResponse, UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-load-user',
@@ -13,11 +14,14 @@ import { UserService } from 'src/app/services/user.service';
 export class LoadUserComponent implements OnInit {
   user?: User;
   subscription!: Subscription;
+  routeUrl: string | null = '/profile'
 
   constructor(
     private authService: AuthService,
     private userService: UserService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
+
   ) {}
 
   ngOnInit() {
@@ -37,11 +41,11 @@ export class LoadUserComponent implements OnInit {
           }
         }),
           tap({
-            next: (userResponse) => {
+            next: (userResponse: UserResponse) => {
               if (userResponse.status === 200) {
                 this.userService.setUser(userResponse.user);
-                localStorage.removeItem('defaultUser')
-                this.router.navigate(['profile']);
+                // read from a route service
+                this.router.navigate(['/profile']);
               } else {
                 this.userService.isUserSet$.next(false);
               }
@@ -64,7 +68,6 @@ export class LoadUserComponent implements OnInit {
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
   }
-
 
 
   

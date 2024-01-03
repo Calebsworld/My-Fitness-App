@@ -1,9 +1,10 @@
 import { Component, Input } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Subject, takeUntil } from 'rxjs';
 import { Exercise } from 'src/app/common/Exercise';
+import { FormValidation } from 'src/app/common/FormValidation';
 import { WorkingSet } from 'src/app/common/WorkingSet';
 import { UserService } from 'src/app/services/user.service';
 
@@ -13,6 +14,7 @@ import { UserService } from 'src/app/services/user.service';
   styleUrls: ['./exercise-modal.component.css']
 })
 export class ExerciseModalComponent {
+
 
   @Input() exercise?:Exercise
   @Input() workoutId?:number
@@ -42,8 +44,16 @@ export class ExerciseModalComponent {
 
     this.exerciseFormGroup = this.formBuilder.group({
       sets: this.formBuilder.array([this.formBuilder.group({
-        reps: new FormControl(),
-        weight: new FormControl()})
+        reps: new FormControl('', [
+          Validators.required,
+          Validators.min(1),
+          Validators.max(100), 
+        ]),
+        weight: new FormControl('', [
+          Validators.required,
+          Validators.min(0),
+          Validators.max(1000)
+        ])})
       ])
     })
   }
@@ -71,7 +81,7 @@ export class ExerciseModalComponent {
         if (res.status === 200 || 201) {
           this.activeModal.close(data)
         } else {
-          console.log("Could ot add/update exercise to workout")
+          console.log("Unable to add/update exercise to workout")
         }
       })
   }
@@ -81,13 +91,20 @@ export class ExerciseModalComponent {
   }
 
   addSet() {
-    const setValues = this.sets.at(this.sets.length-1).value
-    const newSet = {
-      reps: +setValues.reps,
-      weight: +setValues.weight
+    const currSet:WorkingSet = this.sets.at(this.sets.length-1).value
+    const newSet:WorkingSet = {
+      reps: +currSet.reps!,
+      weight: +currSet.weight!
     }
     this.addedSets.push(newSet)
     this.sets.at(this.sets.length-1).reset()
+  }
+
+  isAddSetDisabled(index: number): boolean {
+    const currSet = (this.exerciseFormGroup.get('sets') as FormArray).at(index)
+    const reps = currSet.get('reps')?.value;
+    const weight = currSet.get('weight')?.value;
+    return !reps || !weight
   }
 
   removeCurrentSet(set:WorkingSet) {
@@ -106,7 +123,7 @@ export class ExerciseModalComponent {
       reps: +set.reps!,
       weight: +set.weight!
     };
-      this.addedSets.push(newSet)
+    this.addedSets.push(newSet)
     console.log(this.addedSets)
   }
 
@@ -141,6 +158,31 @@ export class ExerciseModalComponent {
       this.router.navigate(['/workout-details', this.workoutId])
     }
   }
+
+  isRepsInvalid(index:number) {
+    const currSet = (this.exerciseFormGroup.get('sets') as FormArray).at(index)
+    const repsNameControl = currSet.get('reps')
+    return (
+      repsNameControl?.invalid &&
+      (repsNameControl.dirty || repsNameControl.touched)
+    );
+  }
+
+  isWeightInvalid(index:number) {
+    const currSet = (this.exerciseFormGroup.get('sets') as FormArray).at(index)
+    const repsNameControl = currSet.get('weight')
+    return (
+      repsNameControl?.invalid &&
+      (repsNameControl.dirty || repsNameControl.touched)
+    );
+  }
+
+  hasError(index:number, controlName: string, errorType: string): boolean {
+    const currSet = (this.exerciseFormGroup.get('sets') as FormArray).at(index)
+    const control = currSet.get(controlName);
+    return !!control?.hasError(errorType);
+  }
+  
 
 }
 
