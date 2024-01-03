@@ -33,7 +33,7 @@ export class SearchExerciseComponent {
 
   reset() {
     this.searchValue = ''
-    this.initSearchValue.emit(this.searchValue.trim())
+    this.initSearchValue.emit(this.searchValue.trim().toUpperCase())
   }
 
   

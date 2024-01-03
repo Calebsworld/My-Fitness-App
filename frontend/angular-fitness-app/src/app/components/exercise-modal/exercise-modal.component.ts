@@ -44,12 +44,12 @@ export class ExerciseModalComponent {
 
     this.exerciseFormGroup = this.formBuilder.group({
       sets: this.formBuilder.array([this.formBuilder.group({
-        reps: new FormControl('', [
+        reps: new FormControl([
           Validators.required,
           Validators.min(1),
           Validators.max(100), 
         ]),
-        weight: new FormControl('', [
+        weight: new FormControl([
           Validators.required,
           Validators.min(0),
           Validators.max(1000)

@@ -46,15 +46,10 @@
       </div>
     </div>
 
-
     <app-exercise-list [exercises]="exercises" [workoutId]="workoutId" [exerciseId]="exerciseId"
                       (exerciseSuccessEvent)="showExerciseMessage($event)">
     </app-exercise-list>
 
-    <ng-template  #loadingTemplate>
-      <app-loading-template/>
-    </ng-template>
-    
     <ng-template #noExercisesTemplate>
       <div class="row d-flex justify-content-center align-items-center m-3">
         <!--Use bootstrap alert-->
@@ -62,8 +57,12 @@
       </div>
     </ng-template>
     
-    <ng-container *ngIf="exercises.length === 0">
-      <ng-container *ngIf="dataReceived$; then loadingTemplate; else noExercisesTemplate"></ng-container>
+    <ng-container *ngIf="dataReceived$">
+      <ng-container *ngIf="exercises.length === 0; then noExercisesTemplate"></ng-container>
+    </ng-container>
+
+    <ng-container *ngIf="!dataReceived$">
+      <app-loading-template/>
     </ng-container>
 
     <app-exercise-pagination  [(page)]="currentPage"
