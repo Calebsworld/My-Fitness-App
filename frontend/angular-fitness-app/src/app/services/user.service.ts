@@ -4,7 +4,7 @@ import { Exercise } from '../common/Exercise';
 import { WorkingSet } from '../common/WorkingSet';
 import { Workout } from '../common/Workout';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from 'src/environments/environment.development';
 import { User } from '../common/User';
 import { UserDto } from '../common/UserDto';
@@ -15,7 +15,8 @@ import { UserDto } from '../common/UserDto';
 })
 export class UserService  {
 
-  private defaultUser: DefaultUser = {
+  private auth0User: Auth0User = {
+    id: '',
     email: '',
     avatar: ''
   }
@@ -61,18 +62,19 @@ export class UserService  {
     this.isUserSet$.next(false)
   }
 
-  getDefaultUser(): DefaultUser | undefined {
-    const defaultUserJson = localStorage.getItem('defaultUser')
+  getAuth0User(): Auth0User | undefined {
+    const defaultUserJson = localStorage.getItem('auth0User')
     if (!defaultUserJson) {
       return undefined      
     }
     return JSON.parse(defaultUserJson)
   } 
 
-  setDefaultUser(email:string, avatar:string): void {
-      this.defaultUser.email = email
-      this.defaultUser.avatar = avatar
-      localStorage.setItem('defaultUser', JSON.stringify(this.defaultUser))
+  setAuth0User(id:number|string, email:string, avatar:string): void {
+      this.auth0User.id = id
+      this.auth0User.email = email
+      this.auth0User.avatar = avatar
+      localStorage.setItem('auth0User', JSON.stringify(this.auth0User))
   }
 
   // Retrieve the user by email address from auth0 service, use Hibernate built in method, if not exists then route to user-form component.
@@ -96,8 +98,13 @@ export class UserService  {
     return this.httpClient.put<UserResponse>(`${url}/avatar`, file)
   }
 
-  deleteUser(id: number): Observable<UserResponse> {
-    return this.httpClient.delete<UserResponse>(`${environment.newBaseUrl}/${id}`)
+  deleteUser(id: number, idToken: any): Observable<UserResponse> {
+    const url = this.getUserUrl()
+    console.log(url)
+    const headers = new HttpHeaders({
+      'X-ID-Token': idToken
+    });
+    return this.httpClient.delete<UserResponse>(`${url}`, { headers: headers })
   }
 
   getWorkouts(page: number, size: number): Observable<WorkoutWrapperDto> {
@@ -325,9 +332,10 @@ export interface ExerciseWrapperDto {
   workingSetIds: number[]
 }
 
-export type DefaultUser = {
-  email?: string,
-  avatar?: string
+export type Auth0User = {
+  id: string | number
+  email: string,
+  avatar: string
 }
 
 export interface FileUploadResponse {

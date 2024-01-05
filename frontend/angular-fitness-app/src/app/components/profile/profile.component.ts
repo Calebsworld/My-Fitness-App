@@ -3,6 +3,9 @@ import { FileUploadResponse, UserService } from 'src/app/services/user.service';
 import { Router } from '@angular/router';
 import { User } from 'src/app/common/User';
 import { Observable, of } from 'rxjs';
+import { AuthService } from '@auth0/auth0-angular';
+import { TokenService } from 'src/app/services/token.service';
+import { DOCUMENT } from '@angular/common';
 
 
 @Component({
@@ -16,8 +19,9 @@ export class ProfileComponent implements OnInit {
 
   @ViewChild('avatarInput') avatarInputRef!: ElementRef;
 
-  constructor(private userService: UserService, 
-              private router: Router) {}
+  constructor(private userService: UserService,   
+              private authService:AuthService,
+              @Inject(DOCUMENT) private doc: Document) {}
 
 
   ngOnInit(): void {
@@ -37,7 +41,6 @@ export class ProfileComponent implements OnInit {
             console.log(userResponse.user)
             this.userService.setUser(userResponse.user)
           }
-          //this.loadUser()
         },
         error: (error) => {
           console.error(error);
@@ -54,4 +57,26 @@ export class ProfileComponent implements OnInit {
     }
   }
 
+  
+  deleteAccount(): void {
+    const storedUser = this.userService.getUser()
+    const authId = this.userService.getAuth0User()?.id
+    if (authId) {
+      this.userService.deleteUser(storedUser?.id!, authId).subscribe(
+        res => {
+          console.log(res)
+          if (res.status === 200 || 201) {
+            this.userService.clearUserAndDefaultUser()
+            this.authService.logout({
+              logoutParams: {
+                returnTo: this.doc.location.origin,
+              },
+            });
+          }
+        }
+      )
+    } else {
+      console.log('No id token available')
+    }
+  }
 }

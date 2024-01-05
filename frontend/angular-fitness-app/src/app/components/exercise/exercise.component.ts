@@ -63,9 +63,9 @@ export class ExerciseComponent implements OnInit {
 
   ngOnInit(): void {
     const storedUser = this.userService.getUser()
-    const authUser = this.userService.getDefaultUser()
+    const auth0User = this.userService.getAuth0User()
 
-    if (!authUser) {
+    if (auth0User && !storedUser) {
       this.isUserSet$.next(false)
       this.router.navigate(['user-form'])
     } else if (!storedUser) {

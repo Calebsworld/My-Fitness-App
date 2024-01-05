@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 @RestController
 @RequestMapping(value = "/api", produces = "application/json")
@@ -24,12 +25,9 @@ public class AuthController {
 
     @GetMapping("/callback")
     public void handleAuth0Callback(@RequestParam String code, HttpServletResponse response) throws IOException {
-        String accessToken = exchangeCodeForTokens(code);
-        Cookie cookie = new Cookie("accessToken", accessToken);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true); // if using HTTPS
-        cookie.setPath("/"); // set appropriate path
-        response.addCookie(cookie);
+        HashMap<String, String> tokenMap = exchangeCodeForTokens(code);
+        this.setCookie("accessToken", tokenMap.get("accessToken"), response);
+        this.setCookie("idToken", tokenMap.get("idToken"), response);
 
         // Redirect to SPA /load-user
         response.sendRedirect("http://localhost:4200/load-user");
@@ -43,10 +41,26 @@ public class AuthController {
         return state;
     }
 
-    private String exchangeCodeForTokens(String code) {
-        String token = "";
+    private HashMap<String, String> exchangeCodeForTokens(String code) {
+        // create a hashmap to store the access token and id token
+
+        HashMap<String, String> tokenMap = new HashMap<>();
+
         // Make A POST request to Auth0's token endpoint
-        return token;
+
+
+
+        // Parse the response and store the access token and id token in the hashmap
+
+        return tokenMap;
+    }
+
+    private void setCookie(String name, String value, HttpServletResponse response) {
+        Cookie cookie = new Cookie(name, value);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true); // if using HTTPS
+        cookie.setPath("/"); // set appropriate path
+        response.addCookie(cookie);
     }
 
 }

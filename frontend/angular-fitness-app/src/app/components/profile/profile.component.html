@@ -3,9 +3,13 @@
     <div class="row">
       <div class="col-md-4">
         <div class="d-flex flex-column align-items-center">
-          <img [src]="user.avatar" alt="User Avatar" class="img-fluid rounded-circle mb-3">
-          <label for="avatarInput" class="btn btn-outline-secondary">
-            <i class="fas fa-upload"></i> Change Avatar
+          <img [src]="user.avatar" 
+                alt="User Avatar" 
+                class="img-fluid rounded-circle mb-3" 
+                style="max-width: 300px; height: auto;
+                ">
+          <label for="avatarInput" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-upload"></i> Change avatar
           </label>
           <input type="file" id="avatarInput" #avatarInput style="display: none" (change)="uploadAvatar()">
           <div *ngIf="filePath" class="mt-2">
@@ -14,12 +18,20 @@
         </div>
       </div>
       <div class="col-md-8">
-        <div>
-          <h2 class="font-weight-bold">{{ user?.firstName }} {{ user?.lastName }}</h2>
-          <p>Email: {{ user?.email }}</p>
+        
+      </div>
+    </div>
+    <div class="row mt-3">
+      <div class="col-md-4">
+        <div class="d-flex flex-column align-items-center">
+          <h2 class="font-weight-bold align-items-center">{{ user?.firstName }} {{ user?.lastName }}</h2>
+          <p class="text-secondary">{{ user?.email }}</p>
+          <!-- <p class="text-secondary">Subscription: Basic</p> -->
           <!-- Add additional user information as needed -->
+          <button (click)="deleteAccount()" type="button" class="btn btn-outline-danger">Delete Account</button>
         </div>
       </div>
+      <div class="col-md-8"></div>
     </div>
   </div>
 </ng-container>

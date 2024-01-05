@@ -10,7 +10,7 @@
         <a *ngIf="isUserSet$ | async" class="nav-link" aria-current="page" routerLink="/profile" routerLinkActive="active">Profile</a>
         <a class="nav-link" routerLink="/exercise" routerLinkActive="active">Exercises</a>
         <a class="nav-link" routerLink="/workout" routerLinkActive="active">Workouts</a>
-        <ng-container *ngIf="isAuthenticated$ | async ; else unAuthenticated">
+        <ng-container *ngIf="isAuthenticated$ | async; else unAuthenticated">
           <app-avatar-logout *ngIf="isUserSet$ | async" />
         </ng-container>
         <ng-template #unAuthenticated>

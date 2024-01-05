@@ -102,9 +102,10 @@ export class ExerciseModalComponent {
 
   isAddSetDisabled(index: number): boolean {
     const currSet = (this.exerciseFormGroup.get('sets') as FormArray).at(index)
-    const reps = currSet.get('reps')?.value;
-    const weight = currSet.get('weight')?.value;
-    return !reps || !weight
+    const repsControl = currSet.get('reps');
+    const weightControl = currSet.get('weight');
+    return !repsControl?.value || !weightControl?.value || 
+    (repsControl?.pristine && weightControl?.pristine)
   }
 
   removeCurrentSet(set:WorkingSet) {

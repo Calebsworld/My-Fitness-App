@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { DefaultUser, UserService } from 'src/app/services/user.service';
+import { Auth0User, UserService } from 'src/app/services/user.service';
 import { FormValidation } from 'src/app/common/FormValidation';
 import { User } from 'src/app/common/User';
 import { Subscription, map } from 'rxjs';
@@ -37,8 +37,8 @@ export class UserFormComponent implements OnInit, OnDestroy {
 
   addUser() {
     const { fName, lName } = this.userFormGroup.value;
-    const defaultUser: DefaultUser | undefined = this.userService.getDefaultUser()  
-    const userDto: UserDto = { firstName: fName, lastName: lName, email: defaultUser?.email, avatar: defaultUser?.avatar };
+    const auth0User: Auth0User | undefined = this.userService.getAuth0User()  
+    const userDto: UserDto = { firstName: fName, lastName: lName, email: auth0User?.email, avatar: auth0User?.avatar };
 
     this.subscription = this.userService.addUser(userDto).subscribe({
       next: ((userResponse) => {

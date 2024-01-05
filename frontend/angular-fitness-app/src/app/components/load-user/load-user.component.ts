@@ -29,21 +29,24 @@ export class LoadUserComponent implements OnInit {
       .pipe(
         tap((auth0User) => console.log(auth0User)),
         map((auth0User) => ({ 
+          id: auth0User?.sub,
           email: auth0User?.email, 
           avatar: auth0User?.picture 
-        } as DefaultUser)),
-        switchMap((defaultUser) => {
-          if (defaultUser.email && defaultUser.avatar) {
-            this.userService.setDefaultUser(defaultUser.email, defaultUser.avatar)
-            return this.userService.GetUserByEmail(defaultUser?.email)
+        } as Auth0User)),
+        switchMap((auth0User) => {
+          if (auth0User.id && auth0User.email && auth0User.avatar) {
+            this.userService.setAuth0User(auth0User.id, auth0User.email, auth0User.avatar)
+            const email = this.userService.getAuth0User()?.email ?? '';
+            return this.userService.GetUserByEmail(email);
           } else {
-            throw new Error("Invalid user data:" + defaultUser)
+            throw new Error("Invalid user data:" + auth0User);
           }
         }),
           tap({
             next: (userResponse: UserResponse) => {
               if (userResponse.status === 200) {
                 this.userService.setUser(userResponse.user);
+                
                 // read from a route service
                 this.router.navigate(['/profile']);
               } else {
@@ -73,7 +76,8 @@ export class LoadUserComponent implements OnInit {
   
 }
 
-type DefaultUser = {
-  email?: string,
-  avatar?: string
+type Auth0User = {
+  id: number | string,
+  email: string,
+  avatar: string
 }

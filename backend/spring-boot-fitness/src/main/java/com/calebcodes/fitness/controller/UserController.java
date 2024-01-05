@@ -8,6 +8,7 @@ import com.calebcodes.fitness.response.ExerciseResponse;
 import com.calebcodes.fitness.response.FileUploadResponse;
 import com.calebcodes.fitness.response.UserResponse;
 import com.calebcodes.fitness.response.WorkoutResponse;
+import com.calebcodes.fitness.service.Auth0AccountService;
 import com.calebcodes.fitness.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Set;
 
 @RestController
@@ -25,10 +27,12 @@ import java.util.Set;
 public class UserController {
 
     private final UserService userService;
+    private final Auth0AccountService auth0AccountService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, Auth0AccountService auth0AccountService) {
         this.userService = userService;
+        this.auth0AccountService = auth0AccountService;
     }
 
     @GetMapping("/public/users/user/{id}")
@@ -42,6 +46,7 @@ public class UserController {
     }
 
     @PostMapping("/public/users")
+    @PreAuthorize("hasAuthority('create:users')")
     public ResponseEntity<UserResponse> addUser(@RequestBody UserDto userDto) {
         return userService.addUser(userDto);
     }
@@ -54,8 +59,14 @@ public class UserController {
     }
 
     @DeleteMapping("/private/users/{id}")
-    @PreAuthorize("hasAuthority('delete:user')")
-    public ResponseEntity<UserResponse> deleteUser(@PathVariable Long id) {
+    @PreAuthorize("hasAuthority('delete:users')")
+    public ResponseEntity<UserResponse> deleteUser(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
+        String idToken = headers.getFirst("X-ID-Token");
+        try {
+            this.auth0AccountService.deleteAccount(idToken);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
         return this.userService.deleteUser(id);
     }
 

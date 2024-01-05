@@ -47,14 +47,14 @@
                         Weight is a required field
                         </div>
                     </ng-container>
-                    <ng-container *ngIf="!hasError(i, 'reps', 'required') && 
-                                            hasError(i, 'reps', 'min')">
+                    <ng-container *ngIf="!hasError(i, 'weight', 'required') && 
+                                            hasError(i, 'weight', 'min')">
                         <div>
                         Weight must be greater than 0 lbs
                         </div>
                     </ng-container>
                     <ng-container *ngIf="!hasError(i, 'weight', 'required') && 
-                                            !hasError(i, 'reps', 'min') &&                   
+                                            !hasError(i, 'weight', 'min') &&                   
                                             hasError(i, 'weight', 'max')">
                         <div>
                         Weight must not exceed 1000 lbs
