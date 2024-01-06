@@ -1,18 +1,12 @@
 <ng-container *ngIf="user$ | async as user">
-    <div class="d-flex align-items-center position-absolute top-0 end-0 m-2 profile-container">
-      <!--Make img clickable and route to profile -->
-      <img (click)="routeToProfile()" [src]="user.avatar" alt="User Avatar" class="rounded-circle me-3 mt-1" style="width: 50px; height: 50px; cursor: pointer;" />
-      <div class="d-flex flex-column bd-highlight mb-3">
-        <div>
-          <a routerLink="/update-profile" class="text-decoration-none text-light d-flex align-items-center">
-            <i class="fas fa-wrench me-2"></i> Update Profile
-          </a>
-        </div>
-        <div class="mt-1">
-          <a (click)="handleLogout()" class="text-decoration-none text-light d-flex align-items-center" style="cursor: pointer;">
-            <i class="fas fa-sign-out-alt me-2"></i> Log out
-          </a>
-        </div>
-      </div>
+  <div class="d-flex align-items-center position-absolute top-0 end-0 m-2 profile-container bg-dark p-2 rounded">
+    <!--Make img clickable and route to profile -->
+    <img (click)="routeToProfile()" [src]="user.avatar" alt="User Avatar" class="rounded-circle me-3" style="width: 50px; height: 50px; cursor: pointer;" />
+    <div class="d-flex flex-column justify-content-center">
+      <p class="text-light mb-0"> {{ user.firstName }} {{ user.lastName }}</p>
+      <a (click)="handleLogout()" class="btn btn-outline-light btn-sm d-flex align-items-center mt-1" style="cursor: pointer;">
+        <i class="fas fa-sign-out-alt me-2"></i> Log out
+      </a>
     </div>
-  </ng-container>
+  </div>
+</ng-container>

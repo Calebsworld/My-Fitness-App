@@ -58,7 +58,7 @@ export class LoadUserComponent implements OnInit {
                   this.router.navigate(['user-form']);
                 }
               } else {
-                window.alert('Other error occurred:' + error);
+                console.log('Other error occurred:' + error);
               }
             }
           })
