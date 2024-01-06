@@ -46,20 +46,23 @@ export class ExerciseModalComponent {
     })
   }
 
-    this.exerciseFormGroup = this.formBuilder.group({
-      sets: this.formBuilder.array([this.formBuilder.group({
-        reps: new FormControl([
+  this.exerciseFormGroup = this.formBuilder.group({
+    sets: this.formBuilder.array([
+      this.formBuilder.group({
+        reps: new FormControl('', [
           Validators.required,
           Validators.min(1),
-          Validators.max(100), 
+          Validators.max(100),
         ]),
-        weight: new FormControl([
+        weight: new FormControl('', [
           Validators.required,
           Validators.min(0),
-          Validators.max(1000)
-        ])})
-      ])
-    })
+          Validators.max(1000),
+        ]),
+      }),
+    ]),
+  });
+  
   }
 
   onSubmit() {
@@ -111,7 +114,7 @@ export class ExerciseModalComponent {
     const repsControl = currSet.get('reps');
     const weightControl = currSet.get('weight');
     return !repsControl?.value || !weightControl?.value || 
-    (repsControl?.pristine && weightControl?.pristine)
+    (repsControl?.pristine || weightControl?.pristine)
   }
 
   removeCurrentSet(set:WorkingSet) {

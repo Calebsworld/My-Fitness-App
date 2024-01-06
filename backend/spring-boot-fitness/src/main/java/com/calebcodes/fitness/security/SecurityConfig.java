@@ -38,7 +38,6 @@ public class SecurityConfig {
                                 .requestMatchers("/api/public/**").permitAll()
                                 .requestMatchers("/api/private/**").authenticated()
                                 .and()
-//                                .cors(cors -> cors.disable())
                                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                                 .csrf(csrf -> csrf.disable())
                                 .oauth2ResourceServer(oauth2 -> oauth2.

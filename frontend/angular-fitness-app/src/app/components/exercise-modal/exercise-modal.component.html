@@ -27,7 +27,7 @@
                       <ng-container *ngIf="!hasError(i, 'reps', 'required') && 
                                             hasError(i, 'reps', 'min')">
                         <div>
-                            Sets must have a minimum of 1 rep
+                            Sets must have atleast 1 rep
                         </div>
                       </ng-container>
                       
@@ -35,7 +35,7 @@
                                             !hasError(i, 'reps', 'min') &&
                                             hasError(i, 'reps', 'max')">
                         <div>
-                          Sets must have a maximun of 100 reps
+                          Sets must not exceed 100 reps
                         </div>
                       </ng-container>
                   </div>
