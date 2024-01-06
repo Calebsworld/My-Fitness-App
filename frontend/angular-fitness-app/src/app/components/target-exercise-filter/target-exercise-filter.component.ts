@@ -11,7 +11,7 @@ import { ExerciseService } from 'src/app/services/exercise.service';
 export class TargetExerciseFilterComponent implements OnInit {
 
   public selectedValue:string = ''
-  public targets$?:Observable<string[]>
+  public targets$!:Observable<string[]>
   @Output() filterEvent = new EventEmitter<Filter>()
 
   constructor(private excerciseService:ExerciseService) { }
@@ -25,7 +25,7 @@ export class TargetExerciseFilterComponent implements OnInit {
   }
 
   onChange() {
-    this.filterEvent.emit({key: 'target', value: this.selectedValue!})
+    this.filterEvent.emit({key: 'target', value: this.selectedValue})
   }
 
   reset(): void {

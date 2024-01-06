@@ -46,7 +46,6 @@ export class LoadUserComponent implements OnInit {
             next: (userResponse: UserResponse) => {
               if (userResponse.status === 200) {
                 this.userService.setUser(userResponse.user);
-                
                 // read from a route service
                 this.router.navigate(['/profile']);
               } else {
@@ -54,14 +53,12 @@ export class LoadUserComponent implements OnInit {
               }
             },
             error: (error: any) => {
-              console.log(error)
               if (error instanceof HttpErrorResponse) {
                 if (error.error.status === 404) {
-                  console.log(error.error.message)
                   this.router.navigate(['user-form']);
                 }
               } else {
-                console.error('Other error occurred:' + error);
+                window.alert('Other error occurred:' + error);
               }
             }
           })

@@ -12,7 +12,7 @@ import { ExerciseService } from 'src/app/services/exercise.service';
 export class BodyPartExerciseFilterComponent implements OnInit{
  
   public selectedValue: string = '';
-  public bodyParts$?:Observable<string[]>
+  public bodyParts$!:Observable<string[]>
   @Output() filterEvent = new EventEmitter<Filter>();
  
   constructor(private exerciseService: ExerciseService) { };
@@ -26,7 +26,7 @@ export class BodyPartExerciseFilterComponent implements OnInit{
   }
 
   onChange(): void {
-    this.filterEvent.emit({key: 'bodypart', value: this.selectedValue!})
+    this.filterEvent.emit({key: 'bodypart', value: this.selectedValue})
   }
 
   reset(): void {

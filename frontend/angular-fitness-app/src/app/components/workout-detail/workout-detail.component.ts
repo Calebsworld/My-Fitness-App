@@ -55,19 +55,22 @@ export class WorkoutDetailComponent implements OnInit, OnDestroy {
   }
 
   removeExercise(exerciseId:number) {
-    if (!!this.workoutId) {
+    if (this.workoutId) {
       this.exerciseDeleteMessage = undefined
       this.userService.removeExerciseFromWorkout(this.workoutId, exerciseId).pipe(
         takeUntil(this.#unsubscribe$)
-      ).subscribe(
-        res => {
-          if (res.status === 200) {
-            this.exerciseDeleteMessage = res.message
+      ).subscribe({
+        next: (exerciseResponse) => {
+          if (exerciseResponse.status === 200) {
+            this.exerciseDeleteMessage = exerciseResponse.message
             this.showDeleteMessage()
             this.showExercises()
           }
+        },
+        error: (error) => {
+          console.log(error)
         }
-      )
+      })
     }
   }
 

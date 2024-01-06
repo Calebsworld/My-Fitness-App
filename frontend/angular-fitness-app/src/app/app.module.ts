@@ -38,6 +38,7 @@ import { LoadUserComponent } from './components/load-user/load-user.component';
 import { UserFormComponent } from './components/user-form/user-form.component';
 import { AvatarLogoutComponent } from './components/avatar-logout/avatar-logout.component';
 import { UserService } from './services/user.service';
+import { ErrorInterceptor } from './interceptors/error.interceptor';
 
 
 
@@ -121,6 +122,12 @@ const routes: Routes = [
     useClass: AuthHttpInterceptor,
     multi: true,
 },
+{
+  provide: HTTP_INTERCEPTORS,
+  useClass: ErrorInterceptor,
+  multi: true
+},
+
     UserService,
     ExerciseService,
   ],

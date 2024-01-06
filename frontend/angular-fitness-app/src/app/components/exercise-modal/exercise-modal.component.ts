@@ -33,14 +33,18 @@ export class ExerciseModalComponent {
 
   ngOnInit(): void {
     if (!!this.workoutId && !!this.exerciseId) {
-    this.userService.getExercise(this.workoutId, this.exerciseId).subscribe(
-      exercise => {
+    this.userService.getExercise(this.workoutId, this.exerciseId).subscribe({
+      next: (exercise) => {
         this.exercise = exercise
         if (this.exercise.workingSet) {
           this.addedSets = this.exercise.workingSet
         }
-      })
-    }
+      }, 
+      error: (error) => {
+        console.log(error)
+      } 
+    })
+  }
 
     this.exerciseFormGroup = this.formBuilder.group({
       sets: this.formBuilder.array([this.formBuilder.group({
@@ -75,15 +79,17 @@ export class ExerciseModalComponent {
     // refactor
     this.userService.addOrUpdateExercise(this.workoutId!, exerciseWrapperDto).pipe(
       takeUntil(this.#unsubscribe$)
-    ).subscribe(
-      res => {
-        const data = {message: res.message, status: res.status}
-        if (res.status === 200 || 201) {
+    ).subscribe({
+      next: (exerciseResponse) => {
+        const data = {message: exerciseResponse.message, status: exerciseResponse.status}
+        if (exerciseResponse.status === 200 || 201) {
           this.activeModal.close(data)
-        } else {
-          console.log("Unable to add/update exercise to workout")
         }
-      })
+      }, 
+      error: (error) => {
+        console.log(error)
+      }
+    })
   }
 
   get sets(): FormArray {

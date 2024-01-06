@@ -40,7 +40,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     public ResponseEntity<GenericErrorResponse> handleException(ExerciseNotFoundException e) {
         GenericErrorResponse error = new GenericErrorResponse();
-        error.setStatus(HttpStatus.BAD_REQUEST.value());
+        error.setStatus(HttpStatus.NOT_FOUND.value());
         error.setMessage(e.getMessage());
         error.setTimeStamp(System.currentTimeMillis());
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
@@ -49,7 +49,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     public ResponseEntity<GenericErrorResponse> handleException(WorkingSetNotFoundException e) {
         GenericErrorResponse error = new GenericErrorResponse();
-        error.setStatus(HttpStatus.BAD_REQUEST.value());
+        error.setStatus(HttpStatus.NOT_FOUND.value());
         error.setMessage(e.getMessage());
         error.setTimeStamp(System.currentTimeMillis());
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
@@ -80,6 +80,33 @@ public class GlobalExceptionHandler {
         error.setMessage(e.getMessage());
         error.setTimeStamp(System.currentTimeMillis());
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<GenericErrorResponse> handleException(DeleteUserException e) {
+        GenericErrorResponse error = new GenericErrorResponse();
+        error.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        error.setMessage(e.getMessage());
+        error.setTimeStamp(System.currentTimeMillis());
+        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<GenericErrorResponse> handleException(AccessTokenRetrievalException e) {
+        GenericErrorResponse error = new GenericErrorResponse();
+        error.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        error.setMessage(e.getMessage());
+        error.setTimeStamp(System.currentTimeMillis());
+        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<GenericErrorResponse> handleException(Auth0DeletionException e) {
+        GenericErrorResponse error = new GenericErrorResponse();
+        error.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        error.setMessage(e.getMessage());
+        error.setTimeStamp(System.currentTimeMillis());
+        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }

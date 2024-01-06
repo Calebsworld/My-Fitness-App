@@ -4,6 +4,7 @@ import com.calebcodes.fitness.dto.*;
 import com.calebcodes.fitness.entity.Exercise;
 import com.calebcodes.fitness.entity.User;
 import com.calebcodes.fitness.entity.Workout;
+import com.calebcodes.fitness.exception.DeleteUserException;
 import com.calebcodes.fitness.response.ExerciseResponse;
 import com.calebcodes.fitness.response.FileUploadResponse;
 import com.calebcodes.fitness.response.UserResponse;
@@ -13,6 +14,7 @@ import com.calebcodes.fitness.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -62,10 +64,14 @@ public class UserController {
     @PreAuthorize("hasAuthority('delete:users')")
     public ResponseEntity<UserResponse> deleteUser(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
         String idToken = headers.getFirst("X-ID-Token");
+        HttpStatusCode statusCode = null;
         try {
-            this.auth0AccountService.deleteAccount(idToken);
+            statusCode = this.auth0AccountService.deleteAccount(idToken);
         } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
+            throw new DeleteUserException("Error deleting account");
+        }
+        if (statusCode != HttpStatus.NO_CONTENT) {
+            throw new DeleteUserException("Error deleting account");
         }
         return this.userService.deleteUser(id);
     }
@@ -114,7 +120,7 @@ public class UserController {
 
     @PostMapping("/private/users/{id}/workouts/{workoutId}/exercises")
     @PreAuthorize("hasAuthority('create:exercises')")
-    public ResponseEntity<ExerciseResponse> addExercise(
+    public ResponseEntity<ExerciseResponse> addOrUpdateExercise(
             @PathVariable Long id,
             @PathVariable Long workoutId,
             @RequestBody ExerciseWrapperDto exerciseDto) {

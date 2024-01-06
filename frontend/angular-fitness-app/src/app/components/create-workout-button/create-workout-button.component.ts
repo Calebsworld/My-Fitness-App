@@ -22,7 +22,6 @@ export class CreateWorkoutButtonComponent implements OnInit {
 
   // Make the routeUrl a behavior subject and use a service to update the value, then set up observers to listen to the value.
   createWorkout() {
-    // if no user is stored then redirect to load/user, and then come back to this page.
     if (this.storedUser !== null) {
       this.router.navigate(['/workout-form']);
     } else {

@@ -1,5 +1,7 @@
 package com.calebcodes.fitness.service;
 
+import com.calebcodes.fitness.exception.AccessTokenRetrievalException;
+import com.calebcodes.fitness.exception.Auth0DeletionException;
 import com.calebcodes.fitness.response.auth0.TokenResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -42,9 +44,9 @@ public class Auth0AccountServiceImpl implements Auth0AccountService {
     }
 
     @Override
-    public void deleteAccount(String auth0Id) {
+    public HttpStatusCode deleteAccount(String auth0Id) {
         if (auth0Id == null) {
-            throw new IllegalArgumentException("idToken cannot be null");
+            throw new IllegalArgumentException("auth0id cannot be null");
         }
         String url = deleteUserApiUrl + "users/" + auth0Id;
         try {
@@ -56,10 +58,10 @@ public class Auth0AccountServiceImpl implements Auth0AccountService {
 
             HttpEntity<String> entity = new HttpEntity<>(headers);
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.DELETE, entity, String.class);
-            System.out.println(response.getBody());
+            return response.getStatusCode();
         } catch (RestClientException e) {
             // Handle the exception
-            throw new RuntimeException("Error deleting account", e);
+            throw new Auth0DeletionException("Error deleting account from Auth0");
         }
     }
 
@@ -83,7 +85,7 @@ public class Auth0AccountServiceImpl implements Auth0AccountService {
             TokenResponse tokenResponse = mapper.readValue(response.getBody(), TokenResponse.class);
             return tokenResponse.getAccess_token(); // Extract and return the access token
         } catch (RestClientException | JsonProcessingException e) {
-            throw new RuntimeException("Error getting access token", e);
+            throw new AccessTokenRetrievalException("Error retrieving access token from Auth0");
         }
     }
 

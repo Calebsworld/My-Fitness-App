@@ -112,7 +112,7 @@ public class UserServiceImpl implements UserService {
         User user = this.getUserByIdOrThrow(id);
         this.userRepository.deleteById(id);
         return new ResponseEntity<UserResponse>(UserMapper.toUserResponse(user, 200,
-                "Successfully deleted user with id:" + user.getId()), HttpStatus.OK);
+                "Successfully deleted user with id: " + user.getId()), HttpStatus.OK);
     }
 
     @Override

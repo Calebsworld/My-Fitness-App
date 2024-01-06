@@ -84,7 +84,7 @@ export class WorkoutFormComponent implements OnInit {
       this.workoutFormGroup.markAllAsTouched();
       return;
     }
-    if (!!this.workoutId) {
+    if (this.workoutId) {
       this.updateWorkout();
     } else {
       this.addWorkout();
@@ -94,33 +94,38 @@ export class WorkoutFormComponent implements OnInit {
   addWorkout() {
     const { name, description } = this.workoutFormGroup.value;
     const workoutToAdd: Workout = { name, description };
-    this.userService
-      .addOrUpdateWorkout(workoutToAdd)
-      .subscribe((res: WorkoutDto) => {
-        if (res.status === 201) {
-          this.router.navigate([`/exercise/workout/${res.id}`], {
-            queryParams: { workoutSuccessMessage: res.message },
-          });
+    this.userService.addOrUpdateWorkout(workoutToAdd).subscribe({
+        next: (workoutResponse) => {
+          if (workoutResponse.status === 201) {
+            this.router.navigate([`/exercise/workout/${workoutResponse.id}`], {
+              queryParams: { workoutSuccessMessage: workoutResponse.message },
+            });
+          }
+        },
+        error: (error) => {
+          console.log(error)
         }
-      });
+      })
   }
 
   updateWorkout() {
     const { name, description } = this.workoutFormGroup.value;
     const workoutToSave: Workout = { id: this.workoutId, name, description };
-    this.userService
-      .addOrUpdateWorkout(workoutToSave)
-      .subscribe((res: WorkoutDto) => {
-        console.log(res);
-        if (res.status === 201) {
+    this.userService.addOrUpdateWorkout(workoutToSave).subscribe({
+      next: (workoutResponse) => {
+        if (workoutResponse.status === 201) {
           this.router.navigate(['/exercise'], {
             queryParams: {
-              workoutId: res.id,
-              workoutSuccessMessage: res.message,
+              workoutId: workoutResponse.id,
+              workoutSuccessMessage: workoutResponse.message,
             },
           });
         }
-      });
+      },
+      error: (error) => {
+        console.log(error)
+      }
+    })
   }
 
   handleCancel() {
@@ -149,7 +154,7 @@ export class WorkoutFormComponent implements OnInit {
   }
 }
 
-export interface WorkoutDto {
+export interface WorkoutResponse {
   id: number;
   name: string;
   description: string;

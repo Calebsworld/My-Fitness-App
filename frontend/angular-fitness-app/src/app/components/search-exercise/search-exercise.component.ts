@@ -12,7 +12,7 @@ export class SearchExerciseComponent {
   @Output() initSearchValue = new EventEmitter<string>()
 
   onChange() {
-    this.initSearchValue.emit(this.searchValue.trim())
+    this.initSearchValue.emit(this.searchValue)
   }
 
   handleBackspace($event: any): void {
