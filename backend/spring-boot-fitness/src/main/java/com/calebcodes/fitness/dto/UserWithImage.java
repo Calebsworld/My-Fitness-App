@@ -1,5 +1,6 @@
 package com.calebcodes.fitness.dto;
 
+import com.calebcodes.fitness.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,10 +8,9 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDto {
+public class UserWithImage {
 
-    private String firstName;
-    private String lastName;
-    private String email;
+    private User user;
+    private String image;
 
 }

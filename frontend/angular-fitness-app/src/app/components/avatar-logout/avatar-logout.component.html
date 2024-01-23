@@ -1,7 +1,7 @@
 <ng-container *ngIf="user$ | async as user">
   <div class="d-flex align-items-center position-absolute top-0 end-0 m-2 profile-container bg-dark p-2 rounded">
     <!--Make img clickable and route to profile -->
-    <img (click)="routeToProfile()" [src]="user.avatar" alt="User Avatar" class="rounded-circle me-3" style="width: 50px; height: 50px; cursor: pointer;" />
+    <img (click)="routeToProfile()" [src]="user.imgUrl" alt="User Avatar" class="rounded-circle me-3" style="width: 50px; height: 50px; cursor: pointer;" />
     <div class="d-flex flex-column justify-content-center">
       <p class="text-light mb-0"> {{ user.firstName }} {{ user.lastName }}</p>
       <a (click)="handleLogout()" class="btn btn-outline-light btn-sm d-flex align-items-center mt-1" style="cursor: pointer;">

@@ -20,7 +20,6 @@ export class AvatarLogoutComponent {
 
   ngOnInit(): void {
     this.showUserAvatar()
-  
   }
 
   showUserAvatar(): void {

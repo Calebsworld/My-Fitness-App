@@ -12,10 +12,8 @@ import com.calebcodes.fitness.entity.WorkingSet;
 import com.calebcodes.fitness.entity.Workout;
 import com.calebcodes.fitness.exception.*;
 import com.calebcodes.fitness.response.ExerciseResponse;
-import com.calebcodes.fitness.response.FileUploadResponse;
 import com.calebcodes.fitness.response.UserResponse;
 import com.calebcodes.fitness.response.WorkoutResponse;
-import com.calebcodes.fitness.utils.FileUploader;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,19 +41,19 @@ public class UserServiceImpl implements UserService {
     private final WorkoutRepository workoutRepository;
     private final WorkingSetRepository workingSetRepository;
     private final EntityManager entityManager;
-    private final FileUploader fileUploader;
+    private final FileStorageService fileStorageService;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
                            WorkoutRepository workoutRepository,
                            WorkingSetRepository workingSetRepository,
                            EntityManager entityManager,
-                           FileUploader fileUploader) {
+                           FileStorageService fileStorageService) {
         this.userRepository = userRepository;
         this.workoutRepository = workoutRepository;
         this.workingSetRepository = workingSetRepository;
         this.entityManager = entityManager;
-        this.fileUploader = fileUploader;
+        this.fileStorageService = fileStorageService;
     }
 
     @Override
@@ -64,14 +62,15 @@ public class UserServiceImpl implements UserService {
         if (user.isEmpty()) {
             throw new UserNotFoundException("User with email: " + email + " not found");
         }
-        return new ResponseEntity<>(UserMapper.toUserResponse(user.get(), 200,
-                "User with email: " + email + " successfully retrieved"), HttpStatus.OK);
-    }
 
-    @Override
-    public ResponseEntity<User> getUserById(Long id) {
-        User user = this.getUserByIdOrThrow(id);
-        return new ResponseEntity<>(user, HttpStatus.OK);
+        if (user.get().getImageName() == null || user.get().getImageName().isEmpty()) {
+            return new ResponseEntity<>(UserMapper.toUserResponse(user.get(), null, 200,
+                    "User with email: " + email + " successfully retrieved"), HttpStatus.OK);
+        }
+        String userImgData = this.fileStorageService.fetchFile(user.get().getImageName());
+
+        return new ResponseEntity<>(UserMapper.toUserResponse(user.get(), userImgData, 200,
+                "User with email: " + email + " successfully retrieved"), HttpStatus.OK);
     }
 
     @Override
@@ -82,7 +81,8 @@ public class UserServiceImpl implements UserService {
             throw new UserExistsException("User with id: " + user.getId() + "already exists");
         }
         User userToReturn = this.userRepository.save(user);
-        return new ResponseEntity<>(UserMapper.toUserResponse(userToReturn, 201,
+        String imgData = this.fileStorageService.fetchFile(userToReturn.getImageName());
+        return new ResponseEntity<>(UserMapper.toUserResponse(userToReturn, imgData, 201,
                 "User with id: " + userToReturn.getId() + "successfully created"), HttpStatus.CREATED);
     }
 
@@ -94,24 +94,23 @@ public class UserServiceImpl implements UserService {
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
         validateFileName(fileName);
         String sanitizedFileName = sanitizeFileName(fileName);
-        System.out.println("Sanitized file name: " + sanitizedFileName);
-        String fileUrl = "";
         if (!sanitizedFileName.isEmpty() && sanitizedFileName != null) {
-            fileUploader.saveFile(file, sanitizedFileName);
-            fileUrl = fileUploader.getFileUrl(sanitizedFileName);
-            user.setAvatar(fileUrl);
+            fileStorageService.uploadFile(file, sanitizedFileName);
+            user.setImageName(sanitizedFileName);
         } else {
             System.out.println("File name is empty or not a String:" + fileName);
         }
         User userToReturn = this.userRepository.save(user);
-        return new ResponseEntity<>(new UserResponse(userToReturn, "File upload successful", 201), HttpStatus.CREATED);
+        String imgData = this.fileStorageService.fetchFile(userToReturn.getImageName());
+        return new ResponseEntity<>(new UserResponse(userToReturn, imgData, "File upload successful", 201), HttpStatus.CREATED);
     }
 
     @Override
     public ResponseEntity<UserResponse> deleteUser(Long id) {
         User user = this.getUserByIdOrThrow(id);
+        String imgData = this.fileStorageService.fetchFile(user.getImageName());
         this.userRepository.deleteById(id);
-        return new ResponseEntity<UserResponse>(UserMapper.toUserResponse(user, 200,
+        return new ResponseEntity<UserResponse>(UserMapper.toUserResponse(user, imgData, 200,
                 "Successfully deleted user with id: " + user.getId()), HttpStatus.OK);
     }
 

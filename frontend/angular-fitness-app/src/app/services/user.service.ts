@@ -299,7 +299,8 @@ interface Page {
 
 export interface UserResponse {
   user: User
-  message: string;
+  imgData: string
+  message: string
   status: number
 }
 

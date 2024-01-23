@@ -61,7 +61,15 @@ export class UserFormComponent implements OnInit, OnDestroy {
     this.subscription = this.userService.addUser(userDto).subscribe({
       next: (userResponse) => {
         if (userResponse.status === 201) {
-          this.userService.setUser(userResponse.user);
+          const img = this.userService.getAuth0User()?.avatar || '';
+          const user: User = {
+            id: userResponse.user.id,
+            firstName: userResponse.user.firstName,
+            lastName: userResponse.user.lastName,
+            email: userResponse.user.email,
+            imgUrl: img,
+          };
+          this.userService.setUser(user);
           this.router.navigate(['exercise']);
         }
       },

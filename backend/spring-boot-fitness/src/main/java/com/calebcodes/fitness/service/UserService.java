@@ -19,9 +19,7 @@ import java.util.Set;
 public interface UserService {
 
     public ResponseEntity<UserResponse> getUserByEmail(String email);
-    public ResponseEntity<User> getUserById(Long id);
     public ResponseEntity<UserResponse> addUser(UserDto userDto);
-
     ResponseEntity<UserResponse> updateUserAvatar(Long id, MultipartFile file) throws IOException;
     public ResponseEntity<UserResponse> deleteUser(Long id);
     public WorkoutWrapperDto getUserWorkouts(Long id, int page, int size);

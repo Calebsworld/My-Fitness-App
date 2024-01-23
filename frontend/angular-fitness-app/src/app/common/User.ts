@@ -6,7 +6,7 @@ export class User {
     public firstName?: string
     public lastName?: string
     public email?: string
-    public avatar?: string
+    public imgUrl?: string
     public workouts?: Workout[]
 
     constructor() {

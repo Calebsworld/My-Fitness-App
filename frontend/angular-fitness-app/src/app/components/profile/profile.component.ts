@@ -6,6 +6,7 @@ import { Observable, of } from 'rxjs';
 import { AuthService } from '@auth0/auth0-angular';
 import { TokenService } from 'src/app/services/token.service';
 import { DOCUMENT } from '@angular/common';
+import { convertBase64StringtoUrl } from 'src/app/common/Utils';
 
 
 @Component({
@@ -39,8 +40,16 @@ export class ProfileComponent implements OnInit {
     this.userService.updateUserAvatar(formData).subscribe({
       next: (userResponse) => {
         if (userResponse.status === 201) {
-          console.log(userResponse.user);
-          this.userService.setUser(userResponse.user);
+          const img = convertBase64StringtoUrl(userResponse.imgData);
+          const user: User = {
+            id: userResponse.user.id,  
+            firstName: userResponse.user.firstName, 
+            lastName: userResponse.user.lastName, 
+            email: userResponse.user.email, 
+            imgUrl: img, 
+          };
+          console.log(user);
+          this.userService.setUser(user);
         }
       },
       error: (error) => {

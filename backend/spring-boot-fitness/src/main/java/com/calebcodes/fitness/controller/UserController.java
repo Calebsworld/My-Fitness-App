@@ -37,11 +37,6 @@ public class UserController {
         this.auth0AccountService = auth0AccountService;
     }
 
-    @GetMapping("/public/users/user/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        return this.userService.getUserById(id);
-    }
-
     @GetMapping("/public/{email}")
     public ResponseEntity<UserResponse> getUserByEmail(@PathVariable String email) {
         return this.userService.getUserByEmail(email);

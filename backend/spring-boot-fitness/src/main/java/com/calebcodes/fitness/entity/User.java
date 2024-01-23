@@ -31,8 +31,10 @@ public class User {
     @Column(name="email", nullable = false)
     private String email;
 
-    @Column(name="avatar")
-    private String avatar;
+    @Column(name="image_name")
+    private String imageName;
+
+
 
     @OneToMany(mappedBy = "user",
     cascade = CascadeType.ALL,
